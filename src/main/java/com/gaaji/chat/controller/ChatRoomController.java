@@ -4,11 +4,10 @@ import com.gaaji.chat.controller.dto.ChatRoom;
 import com.gaaji.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
 import java.util.List;
 
 @RestController
@@ -30,12 +29,13 @@ public class ChatRoomController {
     }
 
     /** 채팅방 생성 */
-    @PostMapping("/chat/createroom")
+    @PostMapping(value = "/chat/createroom", headers = "user_id")
     @ResponseStatus(HttpStatus.CREATED)
-    public ChatRoom createChatRoom(String roomName) {
+    public ChatRoom createChatRoom(String roomName, @RequestHeader("user_id") String userId) {
         return chatService.createRoom(roomName);
     }
 
+    /** 채팅방 입장 */
     @GetMapping("/chat/room")
     @ResponseStatus(HttpStatus.OK)
     public ChatRoom enterChatRoom(String roomId) {
