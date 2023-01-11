@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Message {
     @Id
-    private Long id;
+    private String id;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
