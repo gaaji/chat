@@ -20,7 +20,8 @@ public class ChatController {
     private final SimpMessageSendingOperations template;
     private final ChatService chatService;
 
-    /** 유저 채팅방 입장을 알리고,
+    /**
+     * 유저 채팅방 입장을 알리고,
      * 서버는 클라이언트 세션에 유저 아이디와 room 아이디를
      * put 해주는 메소드
      */
@@ -32,6 +33,8 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("userId", user.getId());
         headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
 
+        // socket token 발행
+
         // 유저의 상태를 온라인으로?
         user.online();
 
@@ -42,6 +45,10 @@ public class ChatController {
 
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDto chat) {
+
+        // socket token 검증
+
+
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room"+chat.getRoomId(), chat);
     }

@@ -1,4 +1,4 @@
-package com.gaaji.chat.service;
+package com.gaaji.chat.execption;
 
 public class UserNotFoundException extends RuntimeException {
 }

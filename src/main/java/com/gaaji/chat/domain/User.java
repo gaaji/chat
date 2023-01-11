@@ -2,13 +2,12 @@ package com.gaaji.chat.domain;
 
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "users")
 public class User {
     @Id
     private String id;
@@ -23,6 +22,7 @@ public class User {
     public enum UserStatus {
         ON, OFF;
     }
+    @Transient
     private UserStatus status;
 
     public void online() {

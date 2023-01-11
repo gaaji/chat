@@ -5,6 +5,7 @@ import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.UserRoom;
 import com.gaaji.chat.execption.RoomNotFound;
+import com.gaaji.chat.execption.UserNotFoundException;
 import com.gaaji.chat.repository.RoomRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.repository.UserRoomRepository;
