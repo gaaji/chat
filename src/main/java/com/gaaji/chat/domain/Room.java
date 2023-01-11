@@ -11,8 +11,7 @@ import java.util.List;
 @Getter
 public class Room {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
     private String name;
@@ -26,4 +25,15 @@ public class Room {
 
     @OneToMany
     private List<Message> messages;
+
+    public static Room create(String id, String name) {
+        Room room = new Room();
+        room.id = id;
+        room.name = name;
+        return room;
+    }
+
+    public void addUserRoom(UserRoom userRoom) {
+        this.userRooms.add(userRoom);
+    }
 }
