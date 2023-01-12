@@ -12,4 +12,6 @@ public interface ChatService {
     ChatRoom createRoom(String roomName);
     void addUserToRoom(String roomId, String userId);
     void removeUserFromRoom(String roomId, String userId);
+
+    void patchUserConnectionStatus(String userId, String connectionStatus);
 }

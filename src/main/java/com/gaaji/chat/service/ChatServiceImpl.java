@@ -1,6 +1,7 @@
 package com.gaaji.chat.service;
 
 import com.gaaji.chat.controller.dto.ChatRoom;
+import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.UserRoom;
@@ -70,5 +71,12 @@ public class ChatServiceImpl implements ChatService {
                 return;
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void patchUserConnectionStatus(String userId, String connectionStatus) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.setConnectionStatus(ConnectionStatus.valueOf(connectionStatus));
     }
 }

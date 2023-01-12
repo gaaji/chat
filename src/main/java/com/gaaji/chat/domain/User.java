@@ -1,6 +1,7 @@
 package com.gaaji.chat.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "users")
+@NoArgsConstructor
 public class User {
     @Id
     private String id;
@@ -15,25 +17,31 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserRoom> userRooms;
 
+    public User(String id, ConnectionStatus connectionStatus) {
+        this.id = id;
+        this.connectionStatus = connectionStatus;
+    }
+
     public void addUserRoom(UserRoom userRoom) {
         this.userRooms.add(userRoom);
     }
 
-    public enum UserStatus {
-        ON, OFF;
-    }
-    @Transient
-    private UserStatus status;
+    @Convert(converter = ConnectionStatusConverter.class)
+    private ConnectionStatus connectionStatus;
 
     public void online() {
-        this.status = UserStatus.ON;
+        this.connectionStatus = ConnectionStatus.ONLINE;
     }
 
     public void offline() {
-        this.status = UserStatus.OFF;
+        this.connectionStatus = ConnectionStatus.OFFLINE;
     }
 
     public boolean isOnline() {
-        return this.status == UserStatus.ON;
+        return this.connectionStatus == ConnectionStatus.ONLINE;
+    }
+
+    public void setConnectionStatus(ConnectionStatus connectionStatus) {
+        this.connectionStatus = connectionStatus;
     }
 }
