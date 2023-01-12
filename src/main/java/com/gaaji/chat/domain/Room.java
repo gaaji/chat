@@ -25,9 +25,6 @@ public class Room {
     @OneToMany(mappedBy = "room")
     private List<UserRoom> userRooms;
 
-    @OneToMany
-    private List<Message> messages;
-
     public static Room create(String id, String name) {
         Room room = new Room();
         room.id = id;
