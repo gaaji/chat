@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageHandlingController {
     private final MessageHandlingService messageHandlingService;
 
-    @PostMapping(value = "/chat/send")
+    @PostMapping(value = "/push-to-offline-members")
     @ResponseStatus(HttpStatus.OK)
     public void handleMessage(@RequestBody HandleMessageRequestDto dto) {
         // must implement

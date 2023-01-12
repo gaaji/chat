@@ -1,12 +1,9 @@
 package com.gaaji.chat.service;
 
-import com.gaaji.chat.controller.dto.ChatRoom;
 import com.gaaji.chat.controller.dto.RoomResponseDto;
 import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.UserRoom;
-import com.gaaji.chat.execption.RoomNotFound;
 import com.gaaji.chat.execption.UserNotFoundException;
 import com.gaaji.chat.repository.RoomRepository;
 import com.gaaji.chat.repository.UserRepository;
@@ -15,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

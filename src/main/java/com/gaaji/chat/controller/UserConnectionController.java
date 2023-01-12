@@ -1,7 +1,5 @@
 package com.gaaji.chat.controller;
 
-import com.gaaji.chat.controller.dto.ChatRoom;
-import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserConnectionController {
     private final ChatService chatService;
 
-    @PatchMapping("/chat/users/{userId}/connection-status/{connectionStatus}")
+    @PatchMapping("/users/{userId}/connection-status/{connectionStatus}")
     @ResponseStatus(HttpStatus.OK)
     public void patchUserConnectionStatus(@PathVariable String userId, @PathVariable String connectionStatus) {
         chatService.patchUserConnectionStatus(userId, connectionStatus);
