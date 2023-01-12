@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +24,7 @@ public class Room {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "room")
-    private List<UserRoom> userRooms;
+    private List<UserRoom> userRooms = new ArrayList<>();
 
     public static Room create(String id, String name) {
         Room room = new Room();

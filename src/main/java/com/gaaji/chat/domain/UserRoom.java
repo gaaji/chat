@@ -19,8 +19,9 @@ public class UserRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public static UserRoom create(User user, Room room) {
+    public static UserRoom create(String id, User user, Room room) {
         UserRoom userRoom = new UserRoom();
+        userRoom.id = id;
         userRoom.room = room;
         userRoom.user = user;
         room.addUserRoom(userRoom);

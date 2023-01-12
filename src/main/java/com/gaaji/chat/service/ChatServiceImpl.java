@@ -1,6 +1,7 @@
 package com.gaaji.chat.service;
 
 import com.gaaji.chat.controller.dto.ChatRoom;
+import com.gaaji.chat.controller.dto.RoomResponseDto;
 import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
@@ -26,51 +27,10 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final UserRoomRepository userRoomRepository;
 
-    public User findUserById(String userId) {
-        return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-    }
-
-    public ChatRoom findRoomById(String roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(RoomNotFound::new);
-        return ChatRoom.builder().roomId(room.getId()).name(room.getName()).build();
-    }
-
-    public List<ChatRoom> findAllRooms() {
+    @Override
+    public List<RoomResponseDto> findAllRooms() {
         List<Room> rooms = roomRepository.findAll();
-        List<ChatRoom> chatRooms = new ArrayList<>();
-        for (Room room : rooms) {
-            chatRooms.add(ChatRoom.builder().roomId(room.getId()).name(room.getName()).build());
-        }
-        return chatRooms;
-    }
-
-    /** 채팅방 개설 */
-    @Transactional
-    public ChatRoom createRoom(String roomName) {
-        Room room = Room.create(UUID.randomUUID().toString(), roomName);
-        roomRepository.save(room);
-        return ChatRoom.builder().roomId(room.getId()).name(room.getName()).build();
-    }
-
-    /** 채팅방 입장 */
-    @Transactional
-    public void addUserToRoom(String roomId, String userId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(RoomNotFound::new);
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        UserRoom userRoom = UserRoom.create(user, room);
-        userRoomRepository.save(userRoom);
-    }
-
-    /** 채팅방 나가기 */
-    @Transactional
-    public void removeUserFromRoom(String roomId, String userId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(RoomNotFound::new);
-        for (UserRoom userRoom : room.getUserRooms()) {
-            if(userRoom.getUser().getId().equals(userId)) {
-                userRoomRepository.delete(userRoom);
-                return;
-            }
-        }
+        return RoomResponseDto.listOf(rooms);
     }
 
     @Override

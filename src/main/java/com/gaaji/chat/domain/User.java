@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class User {
     private String id;
 
     @OneToMany(mappedBy = "user")
-    private List<UserRoom> userRooms;
+    private List<UserRoom> userRooms = new ArrayList<>();
 
     public User(String id, ConnectionStatus connectionStatus) {
         this.id = id;
