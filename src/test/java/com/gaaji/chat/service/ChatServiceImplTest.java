@@ -5,6 +5,7 @@ import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.UserRoom;
+import com.gaaji.chat.execption.RoomNotFound;
 import com.gaaji.chat.repository.RoomRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.repository.UserRoomRepository;
@@ -32,6 +33,19 @@ class ChatServiceImplTest {
     @Autowired
     ChatService chatService;
 
+    static int randRoomNum = 0;
+    private Room newRoom() {
+        return roomRepository.save(Room.create(UUID.randomUUID().toString(), "room" + randRoomNum++));
+    }
+
+    User newUser() {
+        return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
+    }
+
+    UserRoom newUserRoom(User user, Room room) {
+        return userRoomRepository.save(UserRoom.create(UUID.randomUUID().toString(), user, room));
+    }
+
     @Test
     void createUser() {
         User user = newUser();
@@ -56,20 +70,6 @@ class ChatServiceImplTest {
     }
 
     @Test
-    void patchUserConnectionStatus() {
-        // given
-        String userId = UUID.randomUUID().toString();
-        String connectionStatus = "ONLINE";
-        userRepository.save(new User(userId, ConnectionStatus.valueOf(connectionStatus)));
-
-        // when
-        chatService.patchUserConnectionStatus(userId, "OFFLINE");
-        User user = userRepository.findById(userId).get();
-        // then
-        Assertions.assertEquals(user.getConnectionStatus(), ConnectionStatus.valueOf("OFFLINE"));
-    }
-
-    @Test
     void findAllRooms() {
         // given
         User user1 = newUser();
@@ -88,16 +88,36 @@ class ChatServiceImplTest {
         System.out.println("findAllRooms -> allRooms: " + allRooms.getClass() + " " + allRooms);
     }
 
-    static int randRoomNum = 0;
-    private Room newRoom() {
-        return roomRepository.save(Room.create(UUID.randomUUID().toString(), "room" + randRoomNum++));
+    @Test
+    void patchUserConnectionStatus() {
+        // given
+        String userId = UUID.randomUUID().toString();
+        String connectionStatus = "ONLINE";
+        userRepository.save(new User(userId, ConnectionStatus.valueOf(connectionStatus)));
+
+        // when
+        chatService.patchUserConnectionStatus(userId, "OFFLINE");
+        User user = userRepository.findById(userId).get();
+        // then
+        Assertions.assertEquals(user.getConnectionStatus(), ConnectionStatus.valueOf("OFFLINE"));
     }
 
-    User newUser() {
-        return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
-    }
+    @Test
+    void findRoomByRoomId() {
+        // given
+        Room room = newRoom();
 
-    UserRoom newUserRoom(User user, Room room) {
-        return userRoomRepository.save(UserRoom.create(UUID.randomUUID().toString(), user, room));
+        // when
+        RoomResponseDto roomByRoomId = chatService.findRoomByRoomId(room.getId());
+
+        // then
+        Assertions.assertEquals(room.getId(), roomByRoomId.getId());
+        Assertions.assertEquals(room.getName(), roomByRoomId.getName());
+        Assertions.assertEquals(room.getCreatedAt(), roomByRoomId.getCreatedAt());
+
+
+        // when
+        // then
+        Assertions.assertThrows(RoomNotFound.class, () -> chatService.findRoomByRoomId("asdf"));
     }
 }

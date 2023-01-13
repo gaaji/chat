@@ -4,6 +4,7 @@ import com.gaaji.chat.controller.dto.RoomResponseDto;
 import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.User;
+import com.gaaji.chat.execption.RoomNotFound;
 import com.gaaji.chat.execption.UserNotFoundException;
 import com.gaaji.chat.repository.RoomRepository;
 import com.gaaji.chat.repository.UserRepository;
@@ -33,5 +34,10 @@ public class ChatServiceImpl implements ChatService {
     public void patchUserConnectionStatus(String userId, String connectionStatus) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         user.setConnectionStatus(ConnectionStatus.valueOf(connectionStatus));
+    }
+
+    @Override
+    public RoomResponseDto findRoomByRoomId(String roomId) {
+        return RoomResponseDto.of(roomRepository.findById(roomId).orElseThrow(RoomNotFound::new));
     }
 }
