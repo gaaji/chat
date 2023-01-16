@@ -1,8 +1,10 @@
 package com.gaaji.chat.controller;
 
 import com.gaaji.chat.controller.dto.RoomResponseDto;
-import com.gaaji.chat.service.ChatService;
+import com.gaaji.chat.controller.dto.RoomSaveRequestDto;
+import com.gaaji.chat.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,17 +14,26 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/rooms")
 public class RoomController {
-    private final ChatService chatService;
+    private final RoomService roomService;
 
-    @GetMapping("")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    // Save User's Room
+    public RoomResponseDto myRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId, @RequestBody RoomSaveRequestDto dto) {
+        return roomService.saveRoomForUser(userId, dto);
+    }
+
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RoomResponseDto> roomList() {
-        return chatService.findAllRooms();
+    public List<RoomResponseDto> myRoomList(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId) {
+        return roomService.findRoomsByUserId(userId);
     }
 
     @GetMapping("/{roomId}")
     @ResponseStatus(HttpStatus.OK)
-    public RoomResponseDto room(@PathVariable String roomId) {
-        return chatService.findRoomByRoomId(roomId);
+    public RoomResponseDto myRoom(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId, @PathVariable String roomId) {
+        return roomService.findRoomByRoomId(userId, roomId);
     }
+
+
 }

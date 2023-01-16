@@ -2,7 +2,6 @@ package com.gaaji.chat.controller.dto;
 
 import com.gaaji.chat.domain.Room;
 import com.gaaji.chat.domain.UserRoom;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -41,24 +40,25 @@ public class RoomResponseDto {
                 ", users=" + users +
                 '}';
     }
-}
-class UserDto {
-    private String id;
+    @Getter
+    public static class UserDto {
+        private String id;
 
-    public static List<UserDto> listOf(List<UserRoom> userRooms) {
-        List<UserDto> dtos = new ArrayList<>();
-        for (UserRoom userRoom : userRooms) {
-            UserDto userDto = new UserDto();
-            userDto.id = userRoom.getId();
-            dtos.add(userDto);
+        public static List<UserDto> listOf(List<UserRoom> userRooms) {
+            List<UserDto> dtos = new ArrayList<>();
+            for (UserRoom userRoom : userRooms) {
+                UserDto userDto = new UserDto();
+                userDto.id = userRoom.getUser().getId();
+                dtos.add(userDto);
+            }
+            return dtos;
         }
-        return dtos;
-    }
 
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id='" + id + '\'' +
-                '}';
+        @Override
+        public String toString() {
+            return "UserDto{" +
+                    "id='" + id + '\'' +
+                    '}';
+        }
     }
 }
