@@ -18,6 +18,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserRoom> userRooms = new ArrayList<>();
 
+    @Convert(converter = ConnectionStatusConverter.class)
+    private ConnectionStatus connectionStatus;
+
     public User(String id, ConnectionStatus connectionStatus) {
         this.id = id;
         this.connectionStatus = connectionStatus;
@@ -26,9 +29,6 @@ public class User {
     public void addUserRoom(UserRoom userRoom) {
         this.userRooms.add(userRoom);
     }
-
-    @Convert(converter = ConnectionStatusConverter.class)
-    private ConnectionStatus connectionStatus;
 
     public void online() {
         this.connectionStatus = ConnectionStatus.ONLINE;
