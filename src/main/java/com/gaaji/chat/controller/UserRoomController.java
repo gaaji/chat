@@ -6,6 +6,7 @@ import com.gaaji.chat.service.UserRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,7 +16,7 @@ public class UserRoomController {
     private final UserRoomService userRoomService;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRoomResponseDto userRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId, @RequestBody UserRoomSaveRequestDto dto) {
+    public UserRoomResponseDto userRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId, @RequestBody @Validated UserRoomSaveRequestDto dto) {
         return userRoomService.saveForJoining(userId, dto);
     }
 

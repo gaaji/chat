@@ -4,6 +4,7 @@ import com.gaaji.chat.controller.dto.HandleMessageRequestDto;
 import com.gaaji.chat.service.MessageHandlingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,7 +17,7 @@ public class MessageHandlingController {
 
     @PostMapping(value = "/push-to-offline-members")
     @ResponseStatus(HttpStatus.OK)
-    public void handleMessage(@RequestBody HandleMessageRequestDto dto) {
+    public void handleMessage(@RequestBody @Validated HandleMessageRequestDto dto) {
         // must implement
     }
 }

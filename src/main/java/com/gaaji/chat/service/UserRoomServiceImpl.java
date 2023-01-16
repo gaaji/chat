@@ -28,7 +28,7 @@ public class UserRoomServiceImpl implements UserRoomService {
     @Transactional
     public UserRoomResponseDto saveForJoining(String userId, UserRoomSaveRequestDto dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        Room room = roomRepository.findById(dto.getId()).orElseThrow(RoomNotFoundException::new);
+        Room room = roomRepository.findById(dto.getRoomId()).orElseThrow(RoomNotFoundException::new);
         UserRoom userRoom = userRoomRepository.save(UserRoom.create(UUID.randomUUID().toString(), user, room));
         return UserRoomResponseDto.of(userRoom);
     }

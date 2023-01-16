@@ -34,6 +34,4 @@ public class RoomController {
     public RoomResponseDto myRoom(@RequestHeader(HttpHeaders.AUTHORIZATION) String userId, @PathVariable String roomId) {
         return roomService.findRoomByRoomId(userId, roomId);
     }
-
-
 }
