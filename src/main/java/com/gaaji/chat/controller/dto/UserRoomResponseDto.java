@@ -15,7 +15,7 @@ public class UserRoomResponseDto {
         UserRoomResponseDto dto = new UserRoomResponseDto();
         dto.id = groupChatMember.getId();
         dto.user = UserDto.of(groupChatMember.getMember());
-        dto.room = RoomDto.of(groupChatMember.getGroupChatRoom());
+        dto.room = RoomDto.of(groupChatMember.getChatRoom());
         return dto;
     }
 

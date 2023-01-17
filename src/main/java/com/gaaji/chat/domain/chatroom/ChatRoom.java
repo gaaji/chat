@@ -27,7 +27,7 @@ public abstract class ChatRoom {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "groupChatRoom")
+    @OneToMany(mappedBy = "chatRoom")
     private List<GroupChatMember> groupChatMembers = new ArrayList<>();
 
     public static ChatRoom createGroupChatRoom(String id, String name) {

@@ -9,11 +9,11 @@ import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.GroupChatMember;
 import com.gaaji.chat.domain.chatroom.GroupChatRoom;
 import com.gaaji.chat.execption.NotYourRoomException;
-import com.gaaji.chat.execption.RoomNotFoundException;
+import com.gaaji.chat.execption.ChatRoomNotFoundException;
 import com.gaaji.chat.execption.UserNotFoundException;
-import com.gaaji.chat.repository.RoomRepository;
+import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.UserRepository;
-import com.gaaji.chat.repository.UserRoomRepository;
+import com.gaaji.chat.repository.GroupChatMemberRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,22 +26,22 @@ import java.util.UUID;
 
 @SpringBootTest
 @Transactional
-class ChatChatRoomServiceImplTest {
+class ChatChatChatRoomServiceImplTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    UserRoomRepository userRoomRepository;
+    GroupChatMemberRepository groupChatMemberRepository;
     @Autowired
-    RoomRepository roomRepository;
+    ChatRoomRepository chatRoomRepository;
 
     @Autowired
-    RoomService roomService;
+    ChatRoomService chatRoomService;
     @Autowired
-    UserRoomService userRoomService;
+    GroupChatMemberService groupChatMemberService;
 
     static int randRoomNum = 0;
     private ChatRoom newRoom() {
-        return roomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), "room" + randRoomNum++));
+        return chatRoomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), "room" + randRoomNum++));
     }
 
     User newUser() {
@@ -49,7 +49,7 @@ class ChatChatRoomServiceImplTest {
     }
 
     GroupChatMember newUserRoom(User user, ChatRoom chatRoom) {
-        return userRoomRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
+        return groupChatMemberRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
     }
 
     @Test
@@ -62,7 +62,7 @@ class ChatChatRoomServiceImplTest {
     @Test
     void createRoom() {
         ChatRoom chatRoom = newRoom();
-        ChatRoom byId = roomRepository.findById(chatRoom.getId()).get();
+        ChatRoom byId = chatRoomRepository.findById(chatRoom.getId()).get();
         Assertions.assertEquals(chatRoom, byId);
     }
 
@@ -71,7 +71,7 @@ class ChatChatRoomServiceImplTest {
         User user = newUser();
         ChatRoom chatRoom = newRoom();
         GroupChatMember groupChatMember = newUserRoom(user, chatRoom);
-        GroupChatMember byUserAndRoom = userRoomRepository.findByMemberAndGroupChatRoom(user, (GroupChatRoom) chatRoom).get();
+        GroupChatMember byUserAndRoom = groupChatMemberRepository.findByMemberAndChatRoom(user, (GroupChatRoom) chatRoom).get();
         Assertions.assertEquals(groupChatMember, byUserAndRoom);
     }
 
@@ -83,7 +83,7 @@ class ChatChatRoomServiceImplTest {
         userRepository.save(new User(userId, ConnectionStatus.valueOf(connectionStatus)));
 
         // when
-        roomService.patchUserConnectionStatus(userId, "OFFLINE");
+        chatRoomService.patchUserConnectionStatus(userId, "OFFLINE");
         User user = userRepository.findById(userId).get();
         // then
         Assertions.assertEquals(user.getConnectionStatus(), ConnectionStatus.valueOf("OFFLINE"));
@@ -93,19 +93,19 @@ class ChatChatRoomServiceImplTest {
     void findRoomByRoomId() {
         // given
         User user = newUser();
-        RoomResponseDto room = roomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room", new ArrayList<>()));
+        RoomResponseDto room = chatRoomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room", new ArrayList<>()));
         ChatRoom otherChatRoom = newRoom();
 
         // when
-        RoomResponseDto roomByRoomId = roomService.findRoomByRoomId(user.getId(), room.getId());
+        RoomResponseDto roomByRoomId = chatRoomService.findRoomByRoomId(user.getId(), room.getId());
 
         // then
         Assertions.assertEquals(room.getId(), roomByRoomId.getId());
         Assertions.assertEquals(room.getName(), roomByRoomId.getName());
         Assertions.assertEquals(room.getCreatedAt(), roomByRoomId.getCreatedAt());
-        Assertions.assertThrows(UserNotFoundException.class, () -> roomService.findRoomByRoomId("asdf", room.getId()));
-        Assertions.assertThrows(RoomNotFoundException.class, () -> roomService.findRoomByRoomId(user.getId(), "asdf"));
-        Assertions.assertThrows(NotYourRoomException.class, () -> roomService.findRoomByRoomId(user.getId(), otherChatRoom.getId()));
+        Assertions.assertThrows(UserNotFoundException.class, () -> chatRoomService.findRoomByRoomId("asdf", room.getId()));
+        Assertions.assertThrows(ChatRoomNotFoundException.class, () -> chatRoomService.findRoomByRoomId(user.getId(), "asdf"));
+        Assertions.assertThrows(NotYourRoomException.class, () -> chatRoomService.findRoomByRoomId(user.getId(), otherChatRoom.getId()));
     }
 
     @Test
@@ -113,11 +113,11 @@ class ChatChatRoomServiceImplTest {
         // given
         User user = newUser();
         for (int i = 0; i < 3; i++) {
-            roomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room" + i, null));
+            chatRoomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room" + i, null));
         }
 
         // when
-        List<RoomResponseDto> roomsByUserId = roomService.findRoomsByUserId(user.getId());
+        List<RoomResponseDto> roomsByUserId = chatRoomService.findRoomsByUserId(user.getId());
 
         // then
         Assertions.assertEquals(3, roomsByUserId.size());
@@ -146,7 +146,7 @@ class ChatChatRoomServiceImplTest {
         members.add(RoomSaveRequestDto.UserDto.create(user3.getId()));
 
         // when
-        RoomResponseDto roomResponseDto = roomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("name", members));
+        RoomResponseDto roomResponseDto = chatRoomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("name", members));
 
         // then
         Assertions.assertEquals(roomResponseDto.getName(), "name");
@@ -159,17 +159,17 @@ class ChatChatRoomServiceImplTest {
         // given
         User user = newUser();
         User userToJoin = newUser();
-        RoomResponseDto room = roomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room", new ArrayList<>()));
+        RoomResponseDto room = chatRoomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room", new ArrayList<>()));
 
         // when
-        userRoomService.saveForJoining(userToJoin.getId(), UserRoomSaveRequestDto.create(room.getId()));
-        List<RoomResponseDto> roomsByUserId = roomService.findRoomsByUserId(userToJoin.getId());
+        groupChatMemberService.saveForJoining(userToJoin.getId(), UserRoomSaveRequestDto.create(room.getId()));
+        List<RoomResponseDto> roomsByUserId = chatRoomService.findRoomsByUserId(userToJoin.getId());
 
         // then
         Assertions.assertEquals(1, roomsByUserId.size());
         for (RoomResponseDto dto : roomsByUserId) {
             Assertions.assertEquals("room", dto.getName());
         }
-        Assertions.assertDoesNotThrow(() -> roomService.findRoomByRoomId(userToJoin.getId(), room.getId()));
+        Assertions.assertDoesNotThrow(() -> chatRoomService.findRoomByRoomId(userToJoin.getId(), room.getId()));
     }
 }

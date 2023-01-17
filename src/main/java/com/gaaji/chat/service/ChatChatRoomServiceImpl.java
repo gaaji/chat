@@ -8,11 +8,11 @@ import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.GroupChatMember;
 import com.gaaji.chat.domain.chatroom.GroupChatRoom;
 import com.gaaji.chat.execption.NotYourRoomException;
-import com.gaaji.chat.execption.RoomNotFoundException;
+import com.gaaji.chat.execption.ChatRoomNotFoundException;
 import com.gaaji.chat.execption.UserNotFoundException;
-import com.gaaji.chat.repository.RoomRepository;
+import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.UserRepository;
-import com.gaaji.chat.repository.UserRoomRepository;
+import com.gaaji.chat.repository.GroupChatMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +24,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ChatRoomServiceImpl implements RoomService {
-    private final RoomRepository roomRepository;
+public class ChatChatRoomServiceImpl implements ChatRoomService {
+    private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
-    private final UserRoomRepository userRoomRepository;
+    private final GroupChatMemberRepository groupChatMemberRepository;
 
     @Override
     @Transactional
@@ -39,8 +39,8 @@ public class ChatRoomServiceImpl implements RoomService {
     @Override
     public RoomResponseDto findRoomByRoomId(String ownerId, String roomId) {
         User user = userRepository.findById(ownerId).orElseThrow(UserNotFoundException::new);
-        ChatRoom chatRoom = roomRepository.findById(roomId).orElseThrow(RoomNotFoundException::new);
-        userRoomRepository.findByMemberAndGroupChatRoom(user, (GroupChatRoom) chatRoom).orElseThrow(NotYourRoomException::new);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(ChatRoomNotFoundException::new);
+        groupChatMemberRepository.findByMemberAndChatRoom(user, (GroupChatRoom) chatRoom).orElseThrow(NotYourRoomException::new);
         return RoomResponseDto.of(chatRoom);
     }
 
@@ -48,11 +48,11 @@ public class ChatRoomServiceImpl implements RoomService {
     @Transactional
     public RoomResponseDto saveRoomForUser(String userId, RoomSaveRequestDto dto) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        ChatRoom chatRoom = roomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), dto.getName()));
-        userRoomRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
+        ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), dto.getName()));
+        groupChatMemberRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
         for (RoomSaveRequestDto.UserDto member : dto.getMembers()) {
             User memberUser = userRepository.findById(member.getId()).orElseThrow(UserNotFoundException::new);
-            userRoomRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), memberUser, chatRoom));
+            groupChatMemberRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), memberUser, chatRoom));
         }
         return RoomResponseDto.of(chatRoom);
     }
@@ -62,7 +62,7 @@ public class ChatRoomServiceImpl implements RoomService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<RoomResponseDto> list = new ArrayList<>();
         for (GroupChatMember groupChatMember : user.getGroupChatMembers()) {
-            list.add(RoomResponseDto.of(groupChatMember.getGroupChatRoom()));
+            list.add(RoomResponseDto.of(groupChatMember.getChatRoom()));
         }
         return list;
     }

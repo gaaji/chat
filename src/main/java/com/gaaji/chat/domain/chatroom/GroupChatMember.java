@@ -15,7 +15,7 @@ public class GroupChatMember {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private GroupChatRoom groupChatRoom; //숨기기 하면 null
+    private GroupChatRoom chatRoom; //숨기기 하면 null
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User member;
@@ -23,7 +23,7 @@ public class GroupChatMember {
     public static GroupChatMember create(String id, User user, ChatRoom chatRoom) {
         GroupChatMember groupChatMember = new GroupChatMember();
         groupChatMember.id = id;
-        groupChatMember.groupChatRoom = (GroupChatRoom) chatRoom;
+        groupChatMember.chatRoom = (GroupChatRoom) chatRoom;
         groupChatMember.member = user;
         chatRoom.addUserRoom(groupChatMember);
         user.addUserRoom(groupChatMember);

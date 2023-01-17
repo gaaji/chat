@@ -2,6 +2,6 @@ package com.gaaji.chat.execption;
 
 public class NotYourRoomException extends AbstractApiException {
     public NotYourRoomException() {
-        super(ChatErrorCode.NOT_YOUR_ROOM);
+        super(ChatErrorCode.NOT_YOUR_CHAT_ROOM);
     }
 }

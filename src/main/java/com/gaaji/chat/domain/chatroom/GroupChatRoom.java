@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("group")
 public class GroupChatRoom extends ChatRoom{
-    @OneToMany(mappedBy = "groupChatRoom")
+    @OneToMany(mappedBy = "chatRoom")
     private List<GroupChatMember> groupChatMembers;
 
     @OneToOne(fetch = FetchType.LAZY)
