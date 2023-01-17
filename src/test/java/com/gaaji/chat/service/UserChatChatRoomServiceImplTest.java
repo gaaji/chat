@@ -5,9 +5,9 @@ import com.gaaji.chat.controller.dto.RoomSaveRequestDto;
 import com.gaaji.chat.controller.dto.UserRoomResponseDto;
 import com.gaaji.chat.controller.dto.UserRoomSaveRequestDto;
 import com.gaaji.chat.domain.ConnectionStatus;
-import com.gaaji.chat.domain.Room;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.UserRoom;
+import com.gaaji.chat.domain.chatroom.GroupChatMember;
 import com.gaaji.chat.execption.NotYourUserRoomException;
 import com.gaaji.chat.execption.UserRoomNotFoundException;
 import com.gaaji.chat.repository.RoomRepository;
@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
-class UserRoomServiceImplTest {
+class UserChatChatRoomServiceImplTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -39,16 +37,16 @@ class UserRoomServiceImplTest {
     UserRoomService userRoomService;
 
     static int randRoomNum = 0;
-    private Room newRoom() {
-        return roomRepository.save(Room.create(UUID.randomUUID().toString(), "room" + randRoomNum++));
+    private ChatRoom newRoom() {
+        return roomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), "room" + randRoomNum++));
     }
 
     User newUser() {
         return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
     }
 
-    UserRoom newUserRoom(User user, Room room) {
-        return userRoomRepository.save(UserRoom.create(UUID.randomUUID().toString(), user, room));
+    GroupChatMember newUserRoom(User user, ChatRoom chatRoom) {
+        return userRoomRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
     }
     @Test
     void saveForJoining() {
@@ -74,8 +72,8 @@ class UserRoomServiceImplTest {
         // given
         User user = newUser();
         User otherUser = newUser();
-        Room room = newRoom();
-        UserRoomResponseDto userRoomDto = userRoomService.saveForJoining(user.getId(), UserRoomSaveRequestDto.create(room.getId()));
+        ChatRoom chatRoom = newRoom();
+        UserRoomResponseDto userRoomDto = userRoomService.saveForJoining(user.getId(), UserRoomSaveRequestDto.create(chatRoom.getId()));
 
         // when
         UserRoomResponseDto byUserRoomId = userRoomService.findByUserRoomId(user.getId(), userRoomDto.getId());
@@ -90,8 +88,8 @@ class UserRoomServiceImplTest {
         // given
         User user = newUser();
         User otherUser = newUser();
-        Room room = newRoom();
-        UserRoomResponseDto userRoomDto = userRoomService.saveForJoining(user.getId(), UserRoomSaveRequestDto.create(room.getId()));
+        ChatRoom chatRoom = newRoom();
+        UserRoomResponseDto userRoomDto = userRoomService.saveForJoining(user.getId(), UserRoomSaveRequestDto.create(chatRoom.getId()));
 
         // when
         userRoomService.delete(user.getId(), userRoomDto.getId());

@@ -4,9 +4,10 @@ import com.gaaji.chat.controller.dto.RoomResponseDto;
 import com.gaaji.chat.controller.dto.RoomSaveRequestDto;
 import com.gaaji.chat.controller.dto.UserRoomSaveRequestDto;
 import com.gaaji.chat.domain.ConnectionStatus;
-import com.gaaji.chat.domain.Room;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.UserRoom;
+import com.gaaji.chat.domain.chatroom.GroupChatMember;
+import com.gaaji.chat.domain.chatroom.GroupChatRoom;
 import com.gaaji.chat.execption.NotYourRoomException;
 import com.gaaji.chat.execption.RoomNotFoundException;
 import com.gaaji.chat.execption.UserNotFoundException;
@@ -25,7 +26,7 @@ import java.util.UUID;
 
 @SpringBootTest
 @Transactional
-class RoomServiceImplTest {
+class ChatChatRoomServiceImplTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -39,16 +40,16 @@ class RoomServiceImplTest {
     UserRoomService userRoomService;
 
     static int randRoomNum = 0;
-    private Room newRoom() {
-        return roomRepository.save(Room.create(UUID.randomUUID().toString(), "room" + randRoomNum++));
+    private ChatRoom newRoom() {
+        return roomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), "room" + randRoomNum++));
     }
 
     User newUser() {
         return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
     }
 
-    UserRoom newUserRoom(User user, Room room) {
-        return userRoomRepository.save(UserRoom.create(UUID.randomUUID().toString(), user, room));
+    GroupChatMember newUserRoom(User user, ChatRoom chatRoom) {
+        return userRoomRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
     }
 
     @Test
@@ -60,18 +61,18 @@ class RoomServiceImplTest {
 
     @Test
     void createRoom() {
-        Room room = newRoom();
-        Room byId = roomRepository.findById(room.getId()).get();
-        Assertions.assertEquals(room, byId);
+        ChatRoom chatRoom = newRoom();
+        ChatRoom byId = roomRepository.findById(chatRoom.getId()).get();
+        Assertions.assertEquals(chatRoom, byId);
     }
 
     @Test
     void createUserRoom() {
         User user = newUser();
-        Room room = newRoom();
-        UserRoom userRoom = newUserRoom(user, room);
-        UserRoom byUserAndRoom = userRoomRepository.findByUserAndRoom(user, room).get();
-        Assertions.assertEquals(userRoom, byUserAndRoom);
+        ChatRoom chatRoom = newRoom();
+        GroupChatMember groupChatMember = newUserRoom(user, chatRoom);
+        GroupChatMember byUserAndRoom = userRoomRepository.findByMemberAndGroupChatRoom(user, (GroupChatRoom) chatRoom).get();
+        Assertions.assertEquals(groupChatMember, byUserAndRoom);
     }
 
     @Test
@@ -93,7 +94,7 @@ class RoomServiceImplTest {
         // given
         User user = newUser();
         RoomResponseDto room = roomService.saveRoomForUser(user.getId(), RoomSaveRequestDto.create("room", new ArrayList<>()));
-        Room otherRoom = newRoom();
+        ChatRoom otherChatRoom = newRoom();
 
         // when
         RoomResponseDto roomByRoomId = roomService.findRoomByRoomId(user.getId(), room.getId());
@@ -104,7 +105,7 @@ class RoomServiceImplTest {
         Assertions.assertEquals(room.getCreatedAt(), roomByRoomId.getCreatedAt());
         Assertions.assertThrows(UserNotFoundException.class, () -> roomService.findRoomByRoomId("asdf", room.getId()));
         Assertions.assertThrows(RoomNotFoundException.class, () -> roomService.findRoomByRoomId(user.getId(), "asdf"));
-        Assertions.assertThrows(NotYourRoomException.class, () -> roomService.findRoomByRoomId(user.getId(), otherRoom.getId()));
+        Assertions.assertThrows(NotYourRoomException.class, () -> roomService.findRoomByRoomId(user.getId(), otherChatRoom.getId()));
     }
 
     @Test
