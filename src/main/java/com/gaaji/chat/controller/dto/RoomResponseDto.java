@@ -1,7 +1,7 @@
 package com.gaaji.chat.controller.dto;
 
-import com.gaaji.chat.domain.Room;
-import com.gaaji.chat.domain.UserRoom;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
+import com.gaaji.chat.domain.chatroom.GroupChatMember;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,20 +14,20 @@ public class RoomResponseDto {
     private LocalDateTime createdAt;
     private List<UserDto> users = new ArrayList<>();
 
-    public static List<RoomResponseDto> listOf(List<Room> rooms) {
+    public static List<RoomResponseDto> listOf(List<ChatRoom> chatRooms) {
         List<RoomResponseDto> list = new ArrayList<>();
-        for (Room room : rooms) {
-            list.add(of(room));
+        for (ChatRoom chatRoom : chatRooms) {
+            list.add(of(chatRoom));
         }
         return list;
     }
 
-    public static RoomResponseDto of(Room room) {
+    public static RoomResponseDto of(ChatRoom chatRoom) {
         RoomResponseDto dto = new RoomResponseDto();
-        dto.id = room.getId();
-        dto.createdAt = room.getCreatedAt();
-        dto.name = room.getName();
-        dto.users = UserDto.listOf(room.getUserRooms());
+        dto.id = chatRoom.getId();
+        dto.createdAt = chatRoom.getCreatedAt();
+        dto.name = chatRoom.getName();
+        dto.users = UserDto.listOf(chatRoom.getGroupChatMembers());
         return dto;
     }
 
@@ -44,11 +44,11 @@ public class RoomResponseDto {
     public static class UserDto {
         private String id;
 
-        public static List<UserDto> listOf(List<UserRoom> userRooms) {
+        public static List<UserDto> listOf(List<GroupChatMember> groupChatMembers) {
             List<UserDto> dtos = new ArrayList<>();
-            for (UserRoom userRoom : userRooms) {
+            for (GroupChatMember groupChatMember : groupChatMembers) {
                 UserDto userDto = new UserDto();
-                userDto.id = userRoom.getUser().getId();
+                userDto.id = groupChatMember.getMember().getId();
                 dtos.add(userDto);
             }
             return dtos;
