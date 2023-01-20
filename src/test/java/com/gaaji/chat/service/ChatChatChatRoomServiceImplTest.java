@@ -6,8 +6,7 @@ import com.gaaji.chat.controller.dto.UserRoomSaveRequestDto;
 import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.chatroom.GroupChatMember;
-import com.gaaji.chat.domain.chatroom.GroupChatRoom;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import com.gaaji.chat.execption.NotYourRoomException;
 import com.gaaji.chat.execption.ChatRoomNotFoundException;
 import com.gaaji.chat.execption.UserNotFoundException;
@@ -48,8 +47,8 @@ class ChatChatChatRoomServiceImplTest {
         return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
     }
 
-    GroupChatMember newUserRoom(User user, ChatRoom chatRoom) {
-        return groupChatMemberRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
+    ChatRoomMember newUserRoom(User user, ChatRoom chatRoom) {
+        return groupChatMemberRepository.save(ChatRoomMember.create(UUID.randomUUID().toString(), user, chatRoom));
     }
 
     @Test
@@ -70,9 +69,9 @@ class ChatChatChatRoomServiceImplTest {
     void createUserRoom() {
         User user = newUser();
         ChatRoom chatRoom = newRoom();
-        GroupChatMember groupChatMember = newUserRoom(user, chatRoom);
-        GroupChatMember byUserAndRoom = groupChatMemberRepository.findByMemberAndChatRoom(user, (GroupChatRoom) chatRoom).get();
-        Assertions.assertEquals(groupChatMember, byUserAndRoom);
+        ChatRoomMember chatRoomMember = newUserRoom(user, chatRoom);
+        ChatRoomMember byUserAndRoom = groupChatMemberRepository.findByMemberAndChatRoom(user, chatRoom).get();
+        Assertions.assertEquals(chatRoomMember, byUserAndRoom);
     }
 
     @Test

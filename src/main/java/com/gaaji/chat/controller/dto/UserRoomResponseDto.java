@@ -2,7 +2,7 @@ package com.gaaji.chat.controller.dto;
 
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.chatroom.GroupChatMember;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import lombok.Getter;
 
 @Getter
@@ -11,11 +11,11 @@ public class UserRoomResponseDto {
     RoomDto room;
     UserDto user;
 
-    public static UserRoomResponseDto of(GroupChatMember groupChatMember) {
+    public static UserRoomResponseDto of(ChatRoomMember chatRoomMember) {
         UserRoomResponseDto dto = new UserRoomResponseDto();
-        dto.id = groupChatMember.getId();
-        dto.user = UserDto.of(groupChatMember.getMember());
-        dto.room = RoomDto.of(groupChatMember.getChatRoom());
+        dto.id = chatRoomMember.getId();
+        dto.user = UserDto.of(chatRoomMember.getMember());
+        dto.room = RoomDto.of(chatRoomMember.getChatRoom());
         return dto;
     }
 
