@@ -1,7 +1,7 @@
 package com.gaaji.chat.domain;
 
 import com.gaaji.chat.domain.chatroom.ChatRoom;
-import com.gaaji.chat.domain.chatroom.GroupChatMember;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import com.gaaji.chat.domain.post.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ public class User {
     private String id;
 
     @OneToMany(mappedBy = "member")
-    private List<GroupChatMember> groupChatMembers = new ArrayList<>();
+    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
     @Convert(converter = ConnectionStatusConverter.class)
     private ConnectionStatus connectionStatus;
@@ -35,8 +35,8 @@ public class User {
         this.connectionStatus = connectionStatus;
     }
 
-    public void addUserRoom(GroupChatMember groupChatMember) {
-        this.groupChatMembers.add(groupChatMember);
+    public void addUserRoom(ChatRoomMember chatRoomMember) {
+        this.chatRoomMembers.add(chatRoomMember);
     }
 
     public void online() {

@@ -14,9 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn
-public abstract class ChatRoom {
+public class ChatRoom {
     @Id
     private String id;
 
@@ -28,19 +26,28 @@ public abstract class ChatRoom {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "chatRoom")
-    private List<GroupChatMember> groupChatMembers = new ArrayList<>();
+    private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Post post;
 
     public static ChatRoom createGroupChatRoom(String id, String name) {
-        ChatRoom chatRoom = new GroupChatRoom();
+        ChatRoom chatRoom = new ChatRoom();
         chatRoom.id = id;
         chatRoom.name = name;
         return chatRoom;
     }
 
-    public void addUserRoom(GroupChatMember groupChatMember) {
-        this.groupChatMembers.add(groupChatMember);
+    public void addUser(ChatRoomMember chatRoomMember) {
+        this.chatRoomMembers.add(chatRoomMember);
     }
 
-    public abstract List<User> getMembers();
-    public abstract Post getPost();
+    public List<User> getMembers() {
+        List<User> members = new ArrayList<>();
+        for (ChatRoomMember chatRoomMember : chatRoomMembers) {
+            members.add(chatRoomMember.getMember());
+        }
+        return members;
+    }
+
 }

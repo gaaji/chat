@@ -1,9 +1,11 @@
 package com.gaaji.chat.domain.post;
 
 import com.gaaji.chat.domain.User;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,4 +17,6 @@ public abstract class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
+
+    public abstract List<ChatRoom> getChatRooms();
 }

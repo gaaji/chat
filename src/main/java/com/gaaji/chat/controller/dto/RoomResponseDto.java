@@ -1,7 +1,7 @@
 package com.gaaji.chat.controller.dto;
 
 import com.gaaji.chat.domain.chatroom.ChatRoom;
-import com.gaaji.chat.domain.chatroom.GroupChatMember;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class RoomResponseDto {
         dto.id = chatRoom.getId();
         dto.createdAt = chatRoom.getCreatedAt();
         dto.name = chatRoom.getName();
-        dto.users = UserDto.listOf(chatRoom.getGroupChatMembers());
+        dto.users = UserDto.listOf(chatRoom.getChatRoomMembers());
         return dto;
     }
 
@@ -44,11 +44,11 @@ public class RoomResponseDto {
     public static class UserDto {
         private String id;
 
-        public static List<UserDto> listOf(List<GroupChatMember> groupChatMembers) {
+        public static List<UserDto> listOf(List<ChatRoomMember> chatRoomMembers) {
             List<UserDto> dtos = new ArrayList<>();
-            for (GroupChatMember groupChatMember : groupChatMembers) {
+            for (ChatRoomMember chatRoomMember : chatRoomMembers) {
                 UserDto userDto = new UserDto();
-                userDto.id = groupChatMember.getMember().getId();
+                userDto.id = chatRoomMember.getMember().getId();
                 dtos.add(userDto);
             }
             return dtos;

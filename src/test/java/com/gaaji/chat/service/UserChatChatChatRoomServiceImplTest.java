@@ -7,7 +7,7 @@ import com.gaaji.chat.controller.dto.UserRoomSaveRequestDto;
 import com.gaaji.chat.domain.ConnectionStatus;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.chatroom.GroupChatMember;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import com.gaaji.chat.execption.NotYourUserRoomException;
 import com.gaaji.chat.execption.GroupChatMemberNotFoundException;
 import com.gaaji.chat.repository.ChatRoomRepository;
@@ -45,8 +45,8 @@ class UserChatChatChatRoomServiceImplTest {
         return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
     }
 
-    GroupChatMember newUserRoom(User user, ChatRoom chatRoom) {
-        return groupChatMemberRepository.save(GroupChatMember.create(UUID.randomUUID().toString(), user, chatRoom));
+    ChatRoomMember newUserRoom(User user, ChatRoom chatRoom) {
+        return groupChatMemberRepository.save(ChatRoomMember.create(UUID.randomUUID().toString(), user, chatRoom));
     }
     @Test
     void saveForJoining() {

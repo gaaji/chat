@@ -1,6 +1,6 @@
 package com.gaaji.chat.domain.post;
 
-import com.gaaji.chat.domain.chatroom.DuoChatRoom;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
 import lombok.Getter;
 
 import javax.persistence.DiscriminatorValue;
@@ -12,6 +12,6 @@ import java.util.List;
 @Getter
 @DiscriminatorValue("joonggo")
 public class Joonggo extends Post {
-    @OneToMany(mappedBy = "joonggo")
-    private List<DuoChatRoom> chatRooms;
+    @OneToMany(mappedBy = "post")
+    private List<ChatRoom> chatRooms;
 }
