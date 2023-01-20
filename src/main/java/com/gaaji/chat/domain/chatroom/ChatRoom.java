@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,7 +19,6 @@ public class ChatRoom {
     @Id
     private String id;
 
-    @Column(nullable = false)
     private String name;
 
     @CreatedDate
@@ -33,8 +33,15 @@ public class ChatRoom {
 
     public static ChatRoom createGroupChatRoom(String id, String name) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.id = id;
         chatRoom.name = name;
+        chatRoom.id = id;
+        return chatRoom;
+    }
+
+    public static ChatRoom createDuoChatRoom() {
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.id = UUID.randomUUID().toString();
+        chatRoom.name = "";
         return chatRoom;
     }
 
