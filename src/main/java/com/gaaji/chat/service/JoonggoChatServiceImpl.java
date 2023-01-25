@@ -33,10 +33,12 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
 
     @Override
     @Transactional
-    public RoomResponseDto createDuoChatRoom(String buyerId, JoonggoChatRoomSaveRequestDto dto) {
-        User buyer = userRepository.findById(buyerId).orElseThrow(UserNotFoundException::new);
+    public RoomResponseDto createDuoChatRoom(String authId, JoonggoChatRoomSaveRequestDto dto) {
+        if(!authId.equals(dto.getBuyerId())) throw new NotYourResourceException();
+        User buyer = userRepository.findById(dto.getBuyerId()).orElseThrow(UserNotFoundException::new);
         Post post = postRepository.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
         if(!(post instanceof Joonggo)) throw new PostNotJoonggoException();
+        if(chatRoomRepository.findByPost(post).isPresent()) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
         ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createDuoChatRoom(post));
         chatRoomMemberRepository.save(ChatRoomMember.create(post.getOwner(), duoChatRoom));
         chatRoomMemberRepository.save(ChatRoomMember.create(buyer, duoChatRoom));

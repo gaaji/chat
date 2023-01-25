@@ -6,6 +6,7 @@ import com.gaaji.chat.service.JoonggoChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,13 +17,13 @@ public class JoonggoChatController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomResponseDto joonggoChatRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @RequestBody JoonggoChatRoomSaveRequestDto dto) {
+    public RoomResponseDto joonggoChatRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @RequestBody @Validated JoonggoChatRoomSaveRequestDto dto) {
         return joonggoChatService.createDuoChatRoom(authId, dto);
     }
 
-    @PostMapping("/{roomId}/chat-room/leave")
+    @PatchMapping("/{roomId}/members/{memberId}/leave")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void joonggoChatMemberLeave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @PathVariable String roomId) {
+    public void joonggoChatMemberLeave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @PathVariable String roomId, @PathVariable String memberId) {
 //        joonggoChatService.leaveDuoChatRoom(authId, roomId);
     }
 }
