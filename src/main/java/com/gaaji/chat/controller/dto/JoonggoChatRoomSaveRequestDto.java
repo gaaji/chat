@@ -10,4 +10,11 @@ public class JoonggoChatRoomSaveRequestDto {
     private String buyerId;
     @NotBlank
     private String joonggoId;
+
+    public static JoonggoChatRoomSaveRequestDto create(String buyerId, String joonggoId) {
+        JoonggoChatRoomSaveRequestDto dto = new JoonggoChatRoomSaveRequestDto();
+        dto.buyerId = buyerId;
+        dto.joonggoId = joonggoId;
+        return dto;
+    }
 }
