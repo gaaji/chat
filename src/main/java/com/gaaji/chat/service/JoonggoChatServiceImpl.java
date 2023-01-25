@@ -43,7 +43,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
             String body = new ObjectMapper().writeValueAsString(ChatCreatedEventDto.create(duoChatRoom));
             kafkaTemplate.send("chat-chatRoomCreated", body);
         } catch (JsonProcessingException e) {
-            throw new InterNalServerException();
+            throw new InternalServerException();
         }
         return RoomResponseDto.of(duoChatRoom);
     }
