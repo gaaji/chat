@@ -7,6 +7,8 @@ import lombok.Getter;
 public class ChatRoomDeletedEventDto {
     private String chatRoomId;
     public static ChatRoomDeletedEventDto create(ChatRoom chatRoom) {
-        return null;
+        ChatRoomDeletedEventDto dto = new ChatRoomDeletedEventDto();
+        dto.chatRoomId = chatRoom.getId();
+        return dto;
     }
 }
