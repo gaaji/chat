@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,6 +21,8 @@ public class ChatRoomMember {
     @ManyToOne(fetch = FetchType.LAZY)
     private User member;
 
+    private String roomName;
+
     public static ChatRoomMember create(String id, User user, ChatRoom chatRoom) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.id = id;
@@ -30,4 +33,13 @@ public class ChatRoomMember {
         return chatRoomMember;
     }
 
+    public static ChatRoomMember create(User user, ChatRoom chatRoom) {
+        ChatRoomMember chatRoomMember = new ChatRoomMember();
+        chatRoomMember.id = UUID.randomUUID().toString();
+        chatRoomMember.chatRoom = chatRoom;
+        chatRoomMember.member = user;
+        chatRoom.addUser(chatRoomMember);
+        user.addUserRoom(chatRoomMember);
+        return chatRoomMember;
+    }
 }
