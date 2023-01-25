@@ -5,7 +5,7 @@ import com.gaaji.chat.controller.dto.RoomSaveRequestDto;
 
 import java.util.List;
 
-public interface RoomService {
+public interface ChatRoomService {
     void patchUserConnectionStatus(String userId, String connectionStatus);
 
     RoomResponseDto findRoomByRoomId(String ownerId, String roomId);

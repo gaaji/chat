@@ -1,8 +1,8 @@
 package com.gaaji.chat.controller.dto;
 
-import com.gaaji.chat.domain.Room;
+import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.User;
-import com.gaaji.chat.domain.UserRoom;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import lombok.Getter;
 
 @Getter
@@ -11,11 +11,11 @@ public class UserRoomResponseDto {
     RoomDto room;
     UserDto user;
 
-    public static UserRoomResponseDto of(UserRoom userRoom) {
+    public static UserRoomResponseDto of(ChatRoomMember chatRoomMember) {
         UserRoomResponseDto dto = new UserRoomResponseDto();
-        dto.id = userRoom.getId();
-        dto.user = UserDto.of(userRoom.getUser());
-        dto.room = RoomDto.of(userRoom.getRoom());
+        dto.id = chatRoomMember.getId();
+        dto.user = UserDto.of(chatRoomMember.getMember());
+        dto.room = RoomDto.of(chatRoomMember.getChatRoom());
         return dto;
     }
 
@@ -33,9 +33,9 @@ public class UserRoomResponseDto {
     public static class RoomDto {
         private String id;
 
-        public static RoomDto of(Room room) {
+        public static RoomDto of(ChatRoom chatRoom) {
             RoomDto roomDto = new RoomDto();
-            roomDto.id = room.getId();
+            roomDto.id = chatRoom.getId();
             return roomDto;
         }
     }
