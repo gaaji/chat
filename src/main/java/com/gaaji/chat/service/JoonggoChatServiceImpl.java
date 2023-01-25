@@ -15,6 +15,7 @@ import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.service.dto.ChatCreatedEventDto;
+import com.gaaji.chat.service.dto.ChatRoomDeletedEventDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,23 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
             throw new InternalServerException();
         }
         return RoomResponseDto.of(duoChatRoom);
+    }
+
+    @Override
+    @Transactional
+    public void leaveDuoChatRoom(String authId, String chatRoomId, String memberIdToLeave) {
+        if(!authId.equals(memberIdToLeave)) throw new NotYourResourceException();
+        User memberToLeave = userRepository.findById(memberIdToLeave).orElseThrow(UserNotFoundException::new);
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(ChatRoomNotFoundException::new);
+        chatRoomMemberRepository.findByChatRoomAndMember(chatRoom, memberToLeave).ifPresent(chatRoomMember -> {
+            chatRoomMember.leave();
+        });
+        if (chatRoom.getChatRoomMembers().size() > 0) return;
+        try {
+            String body = new ObjectMapper().writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
+            kafkaTemplate.send("chat-chatRoomDeleted", body);
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException();
+        }
     }
 }

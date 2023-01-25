@@ -21,7 +21,9 @@ public class ChatRoomMember {
     @ManyToOne(fetch = FetchType.LAZY)
     private User member;
 
-    private String roomName;
+    private String roomName = "";
+
+    private boolean isLeft = false;
 
     public static ChatRoomMember create(String id, User user, ChatRoom chatRoom) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
@@ -41,5 +43,9 @@ public class ChatRoomMember {
         chatRoom.addUser(chatRoomMember);
         user.addUserRoom(chatRoomMember);
         return chatRoomMember;
+    }
+
+    public void leave() {
+        this.isLeft = true;
     }
 }

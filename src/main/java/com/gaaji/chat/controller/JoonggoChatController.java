@@ -21,9 +21,9 @@ public class JoonggoChatController {
         return joonggoChatService.createDuoChatRoom(authId, dto);
     }
 
-    @PatchMapping("/{roomId}/members/{memberId}/leave")
+    @PatchMapping("/{chatRoomId}/members/{memberId}/leave")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void joonggoChatMemberLeave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @PathVariable String roomId, @PathVariable String memberId) {
-//        joonggoChatService.leaveDuoChatRoom(authId, roomId);
+    public void joonggoChatMemberLeave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @PathVariable String chatRoomId, @PathVariable String memberId) {
+        joonggoChatService.leaveDuoChatRoom(authId, chatRoomId, memberId);
     }
 }
