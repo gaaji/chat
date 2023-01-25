@@ -1,8 +1,7 @@
 package com.gaaji.chat.service;
 
 import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
-import com.gaaji.chat.controller.dto.RoomResponseDto;
-import com.gaaji.chat.domain.ConnectionStatus;
+import com.gaaji.chat.controller.dto.ChatRoomResponseDto;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.chatroom.ChatRoomMember;
@@ -10,7 +9,6 @@ import com.gaaji.chat.domain.post.Joonggo;
 import com.gaaji.chat.domain.post.Post;
 import com.gaaji.chat.execption.JoonggoChatRoomForTheBuyerAlreadyExistsException;
 import com.gaaji.chat.repository.ChatRoomRepository;
-import com.gaaji.chat.repository.GroupChatMemberRepository;
 import com.gaaji.chat.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,22 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @Transactional
 class JoonggoChatServiceImplTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    GroupChatMemberRepository groupChatMemberRepository;
-    @Autowired
     ChatRoomRepository chatRoomRepository;
-
-    @Autowired
-    ChatRoomService chatRoomService;
-    @Autowired
-    GroupChatMemberService groupChatMemberService;
 
     @Autowired
     JoonggoChatService joonggoChatService;
@@ -44,17 +33,12 @@ class JoonggoChatServiceImplTest {
     @Autowired
     EntityManager em;
 
-    static int randRoomNum = 0;
     private ChatRoom newRoom() {
-        return chatRoomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString(), "room" + randRoomNum++));
+        return chatRoomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString()));
     }
 
     User newUser() {
-        return userRepository.save(new User(UUID.randomUUID().toString(), ConnectionStatus.OFFLINE));
-    }
-
-    ChatRoomMember newUserRoom(User user, ChatRoom chatRoom) {
-        return groupChatMemberRepository.save(ChatRoomMember.create(UUID.randomUUID().toString(), user, chatRoom));
+        return userRepository.save(new User(UUID.randomUUID().toString()));
     }
 
     @Test
@@ -65,9 +49,9 @@ class JoonggoChatServiceImplTest {
         Joonggo joonggo = newJoonggo(seller);
 
         // 성공
-        RoomResponseDto dto = joonggoChatService.createDuoChatRoom(buyer.getId(), JoonggoChatRoomSaveRequestDto.create(buyer.getId(), joonggo.getId()));
-        Assertions.assertEquals(2, dto.getUsers().size());
-        dto.getUsers().forEach(userDto -> {
+        ChatRoomResponseDto dto = joonggoChatService.createDuoChatRoom(buyer.getId(), JoonggoChatRoomSaveRequestDto.create(buyer.getId(), joonggo.getId()));
+        Assertions.assertEquals(2, dto.getMembers().size());
+        dto.getMembers().forEach(userDto -> {
             String id = userDto.getId();
             Assertions.assertTrue(id.equals(seller.getId()) || id.equals(buyer.getId()));
         });
@@ -83,6 +67,23 @@ class JoonggoChatServiceImplTest {
     }
 
     @Test
+    @Transactional
     void leaveDuoChatRoom() {
+        // given
+        User seller = newUser();
+        User buyer = newUser();
+        Joonggo joonggo = newJoonggo(seller);
+        ChatRoomResponseDto dto = joonggoChatService.createDuoChatRoom(buyer.getId(), JoonggoChatRoomSaveRequestDto.create(buyer.getId(), joonggo.getId()));
+
+        // when
+        joonggoChatService.leaveDuoChatRoom(buyer.getId(), dto.getId(), buyer.getId());
+        ChatRoom chatRoom = chatRoomRepository.findById(dto.getId()).get();
+
+        // then
+        for (ChatRoomMember chatRoomMember : chatRoom.getChatRoomMembers()) {
+            if(chatRoomMember.getMember().getId().equals(buyer.getId())) Assertions.assertEquals(true, chatRoomMember.isLeft());
+            break;
+        }
+
     }
 }

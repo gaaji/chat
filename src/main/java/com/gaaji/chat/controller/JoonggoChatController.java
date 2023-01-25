@@ -1,7 +1,7 @@
 package com.gaaji.chat.controller;
 
 import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
-import com.gaaji.chat.controller.dto.RoomResponseDto;
+import com.gaaji.chat.controller.dto.ChatRoomResponseDto;
 import com.gaaji.chat.service.JoonggoChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +17,7 @@ public class JoonggoChatController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoomResponseDto joonggoChatRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @RequestBody @Validated JoonggoChatRoomSaveRequestDto dto) {
+    public ChatRoomResponseDto joonggoChatRoomSave(@RequestHeader(HttpHeaders.AUTHORIZATION) String authId, @RequestBody @Validated JoonggoChatRoomSaveRequestDto dto) {
         return joonggoChatService.createDuoChatRoom(authId, dto);
     }
 
