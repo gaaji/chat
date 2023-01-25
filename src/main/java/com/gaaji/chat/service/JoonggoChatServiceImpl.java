@@ -2,11 +2,12 @@ package com.gaaji.chat.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
 import com.gaaji.chat.controller.dto.RoomResponseDto;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.chatroom.ChatRoomMember;
-import com.gaaji.chat.domain.chatroom.ChatRoomMemberRepository;
+import com.gaaji.chat.repository.ChatRoomMemberRepository;
 import com.gaaji.chat.domain.post.Joonggo;
 import com.gaaji.chat.domain.post.Post;
 import com.gaaji.chat.execption.*;
@@ -32,11 +33,11 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
 
     @Override
     @Transactional
-    public RoomResponseDto createDuoChatRoom(String buyerId, String joonggoId) {
+    public RoomResponseDto createDuoChatRoom(String buyerId, JoonggoChatRoomSaveRequestDto dto) {
         User buyer = userRepository.findById(buyerId).orElseThrow(UserNotFoundException::new);
-        Post post = postRepository.findById(joonggoId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
         if(!(post instanceof Joonggo)) throw new PostNotJoonggoException();
-        ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createDuoChatRoom());
+        ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createDuoChatRoom(post));
         chatRoomMemberRepository.save(ChatRoomMember.create(post.getOwner(), duoChatRoom));
         chatRoomMemberRepository.save(ChatRoomMember.create(buyer, duoChatRoom));
         try {

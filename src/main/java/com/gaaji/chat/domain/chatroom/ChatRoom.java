@@ -28,7 +28,7 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
     public static ChatRoom createGroupChatRoom(String id, String name) {
@@ -38,9 +38,10 @@ public class ChatRoom {
         return chatRoom;
     }
 
-    public static ChatRoom createDuoChatRoom() {
+    public static ChatRoom createDuoChatRoom(Post post) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.id = UUID.randomUUID().toString();
+        chatRoom.post = post;
         chatRoom.name = "";
         return chatRoom;
     }
