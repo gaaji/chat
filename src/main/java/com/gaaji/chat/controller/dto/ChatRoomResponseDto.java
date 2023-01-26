@@ -8,26 +8,26 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 @Getter
-public class RoomResponseDto {
+public class ChatRoomResponseDto {
     private String id;
     private String name;
     private LocalDateTime createdAt;
-    private List<UserDto> users = new ArrayList<>();
+    private List<UserDto> members = new ArrayList<>();
 
-    public static List<RoomResponseDto> listOf(List<ChatRoom> chatRooms) {
-        List<RoomResponseDto> list = new ArrayList<>();
+    public static List<ChatRoomResponseDto> listOf(List<ChatRoom> chatRooms) {
+        List<ChatRoomResponseDto> list = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
             list.add(of(chatRoom));
         }
         return list;
     }
 
-    public static RoomResponseDto of(ChatRoom chatRoom) {
-        RoomResponseDto dto = new RoomResponseDto();
+    public static ChatRoomResponseDto of(ChatRoom chatRoom) {
+        ChatRoomResponseDto dto = new ChatRoomResponseDto();
         dto.id = chatRoom.getId();
         dto.createdAt = chatRoom.getCreatedAt();
         dto.name = chatRoom.getName();
-        dto.users = UserDto.listOf(chatRoom.getChatRoomMembers());
+        dto.members = UserDto.listOf(chatRoom.getChatRoomMembers());
         return dto;
     }
 
@@ -37,7 +37,7 @@ public class RoomResponseDto {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
-                ", users=" + users +
+                ", users=" + members +
                 '}';
     }
     @Getter

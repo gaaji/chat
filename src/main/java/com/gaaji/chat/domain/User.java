@@ -21,37 +21,18 @@ public class User {
     @OneToMany(mappedBy = "member")
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
-    @Convert(converter = ConnectionStatusConverter.class)
-    private ConnectionStatus connectionStatus;
-
     @OneToMany(mappedBy = "owner")
     private List<Post> posts;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<ChatRoom> chatRooms;
 
-    public User(String id, ConnectionStatus connectionStatus) {
+    public User(String id) {
         this.id = id;
-        this.connectionStatus = connectionStatus;
     }
 
     public void addUserRoom(ChatRoomMember chatRoomMember) {
         this.chatRoomMembers.add(chatRoomMember);
     }
 
-    public void online() {
-        this.connectionStatus = ConnectionStatus.ONLINE;
-    }
-
-    public void offline() {
-        this.connectionStatus = ConnectionStatus.OFFLINE;
-    }
-
-    public boolean isOnline() {
-        return this.connectionStatus == ConnectionStatus.ONLINE;
-    }
-
-    public void setConnectionStatus(ConnectionStatus connectionStatus) {
-        this.connectionStatus = connectionStatus;
-    }
 }

@@ -25,23 +25,22 @@ public class ChatRoom {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.PERSIST)
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-    public static ChatRoom createGroupChatRoom(String id, String name) {
+    public static ChatRoom createGroupChatRoom(String id) {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.name = name;
         chatRoom.id = id;
         return chatRoom;
     }
 
-    public static ChatRoom createDuoChatRoom() {
+    public static ChatRoom createDuoChatRoom(Post post) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.id = UUID.randomUUID().toString();
-        chatRoom.name = "";
+        chatRoom.post = post;
         return chatRoom;
     }
 
@@ -57,4 +56,19 @@ public class ChatRoom {
         return members;
     }
 
+    @Override
+    public String toString() {
+        return "ChatRoom{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                ", chatRoomMembers=" + chatRoomMembers +
+                ", post=" + post +
+                '}';
+    }
+
+    public void leaveMember(User memberToLeave) {
+        for (ChatRoomMember chatRoomMember : chatRoomMembers)
+            if (chatRoomMember.getMember().getId().equals(memberToLeave.getId())) chatRoomMember.leave();
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,6 +18,13 @@ public abstract class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
+
+    public static Joonggo randomJoonggoForTest(User seller) {
+        Post joonggo = new Joonggo();
+        joonggo.id = UUID.randomUUID().toString();
+        joonggo.owner = seller;
+        return (Joonggo) joonggo;
+    }
 
     public abstract List<ChatRoom> getChatRooms();
 }

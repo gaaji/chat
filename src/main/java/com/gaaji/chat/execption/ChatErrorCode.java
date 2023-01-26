@@ -19,7 +19,7 @@ public enum ChatErrorCode implements ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "c-0006", "NOT_FOUND"),
     POST_NOT_JOONGGO(HttpStatus.BAD_REQUEST, "c-0007", "the post of id is not a joonggo"),
     NOT_YOUR_RESOURCE(HttpStatus.FORBIDDEN, "c-0008", "not your resource"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "c-0009", "internal server error");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "c-0009", "internal server error"), JOONGGO_CHAT_ROOM_FOR_THE_BUYER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0010", "");
 
 
     private final HttpStatus httpStatus;
