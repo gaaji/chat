@@ -31,17 +31,16 @@ public class ChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
-    public static ChatRoom createGroupChatRoom(String id) {
+
+    public static ChatRoom createChatRoom() {
         ChatRoom chatRoom = new ChatRoom();
-        chatRoom.id = id;
+        chatRoom.id = UUID.randomUUID().toString();
         return chatRoom;
     }
 
-    public static ChatRoom createDuoChatRoom(Post post) {
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.id = UUID.randomUUID().toString();
-        chatRoom.post = post;
-        return chatRoom;
+    public void linkPost(Post post) {
+        this.post = post;
+        post.addChatRoom(this);
     }
 
     public void addUser(ChatRoomMember chatRoomMember) {

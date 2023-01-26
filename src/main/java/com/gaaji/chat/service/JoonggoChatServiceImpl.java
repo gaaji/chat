@@ -13,15 +13,13 @@ import com.gaaji.chat.execption.*;
 import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
-import com.gaaji.chat.service.dto.ChatCreatedEventDto;
+import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
 import com.gaaji.chat.service.dto.ChatRoomDeletedEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.concurrent.ListenableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -41,14 +39,17 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         User buyer = userRepository.findById(dto.getBuyerId()).orElseThrow(UserNotFoundException::new);
         Post post = postRepository.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
         if(!(post instanceof Joonggo)) throw new PostNotJoonggoException();
-        if(chatRoomRepository.findByPost(post).isPresent()) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
-        ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createDuoChatRoom(post));
+        if(((Joonggo) post).getChatRoomOf(buyer) != null) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
+
+        ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createChatRoom());
+        duoChatRoom.linkPost(post);
         ChatRoomMember.create(post.getOwner(), duoChatRoom);
         ChatRoomMember.create(buyer, duoChatRoom);
+
         try {
-            String body = new ObjectMapper().writeValueAsString(ChatCreatedEventDto.create(duoChatRoom));
-            ListenableFuture<SendResult<String, String>> sendResultListenableFuture = kafkaTemplate.send("chat-chatRoomCreated", body);
-            log.info("event occurred 'chat-chatRoomCreated'");
+            String body = new ObjectMapper().writeValueAsString(ChatRoomCreatedEventDto.create(duoChatRoom));
+            kafkaTemplate.send("chat-chatRoomCreated", body);
+            log.info("Event Occurred: chat-chatRoomCreated");
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
@@ -66,7 +67,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
             kafkaTemplate.send("chat-chatRoomDeleted", body);
-            log.info("event occurred 'chat-chatRoomDeleted'");
+            log.info("Event Occurred: chat-chatRoomDeleted");
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }

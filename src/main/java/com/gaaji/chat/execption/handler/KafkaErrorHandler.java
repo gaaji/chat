@@ -1,4 +1,4 @@
-package com.gaaji.chat.execption;
+package com.gaaji.chat.execption.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
