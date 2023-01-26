@@ -18,6 +18,8 @@ public class User {
     @Id
     private String id;
 
+    private String name;
+
     @OneToMany(mappedBy = "member")
     private List<ChatRoomMember> chatRoomMembers = new ArrayList<>();
 

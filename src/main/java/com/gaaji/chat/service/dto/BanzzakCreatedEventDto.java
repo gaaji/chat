@@ -5,11 +5,13 @@ import lombok.Getter;
 
 @Getter
 public class BanzzakCreatedEventDto {
-    private String postId;
+    private String id;
+    private String name;
 
-    public static BanzzakCreatedEventDto create(Banzzak banzzak) {
+    public static BanzzakCreatedEventDto create(Banzzak banzzak, String banzzakName) {
         BanzzakCreatedEventDto dto = new BanzzakCreatedEventDto();
-        dto.postId = banzzak.getId();
+        dto.id = banzzak.getId();
+        dto.name = banzzakName;
         return dto;
     }
 }

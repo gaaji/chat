@@ -50,14 +50,14 @@ class GroupChatServiceImplTest {
         Banzzak banzzak = newBanzzak(groupOwner);
 
         // when
-        groupChatService.handleBanzzakCreated(new ObjectMapper().writeValueAsString(BanzzakCreatedEventDto.create(banzzak)));
+        groupChatService.handleBanzzakCreated(new ObjectMapper().writeValueAsString(BanzzakCreatedEventDto.create(banzzak, "달리기 모임")));
 
         // then
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByPost(banzzak);
         Assertions.assertTrue(chatRoomOptional.isPresent());
         ChatRoom chatRoom = chatRoomOptional.get();
         Assertions.assertEquals(groupOwner, chatRoom.getPost().getOwner());
-        Assertions.assertThrows(ChatRoomForTheBanzzakAlreadyExistsException.class, () -> groupChatService.handleBanzzakCreated(new ObjectMapper().writeValueAsString(BanzzakCreatedEventDto.create(banzzak))));
+        Assertions.assertThrows(ChatRoomForTheBanzzakAlreadyExistsException.class, () -> groupChatService.handleBanzzakCreated(new ObjectMapper().writeValueAsString(BanzzakCreatedEventDto.create(banzzak, "수영 모임"))));
 
     }
 }

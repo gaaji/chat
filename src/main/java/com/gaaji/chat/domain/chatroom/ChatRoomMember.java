@@ -25,23 +25,14 @@ public class ChatRoomMember {
 
     private boolean isLeft = false;
 
-    public static ChatRoomMember create(String id, User user, ChatRoom chatRoom) {
-        ChatRoomMember chatRoomMember = new ChatRoomMember();
-        chatRoomMember.id = id;
-        chatRoomMember.chatRoom = chatRoom;
-        chatRoomMember.member = user;
-        chatRoom.addUser(chatRoomMember);
-        user.addUserRoom(chatRoomMember);
-        return chatRoomMember;
-    }
-
-    public static ChatRoomMember create(User user, ChatRoom chatRoom) {
+    public static ChatRoomMember create(User member, ChatRoom chatRoom, String roomName) {
         ChatRoomMember chatRoomMember = new ChatRoomMember();
         chatRoomMember.id = UUID.randomUUID().toString();
         chatRoomMember.chatRoom = chatRoom;
-        chatRoomMember.member = user;
+        chatRoomMember.member = member;
+        chatRoomMember.roomName = roomName;
         chatRoom.addUser(chatRoomMember);
-        user.addUserRoom(chatRoomMember);
+        member.addUserRoom(chatRoomMember);
         return chatRoomMember;
     }
 

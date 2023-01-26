@@ -42,9 +42,9 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         if(((Joonggo) post).getChatRoomOf(buyer) != null) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
 
         ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createChatRoom());
-        duoChatRoom.linkPost(post);
-        ChatRoomMember.create(post.getOwner(), duoChatRoom);
-        ChatRoomMember.create(buyer, duoChatRoom);
+        duoChatRoom.relatePost(post);
+        ChatRoomMember.create(post.getOwner(), duoChatRoom, buyer.getName());
+        ChatRoomMember.create(buyer, duoChatRoom, post.getOwner().getName());
 
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomCreatedEventDto.create(duoChatRoom));
@@ -53,7 +53,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
-        return ChatRoomResponseDto.of(duoChatRoom);
+        return ChatRoomResponseDto.of(duoChatRoom, post.getOwner().getName());
     }
 
     @Override

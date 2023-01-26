@@ -15,6 +15,7 @@ import com.gaaji.chat.service.dto.BanzzakCreatedEventDto;
 import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,16 +31,17 @@ public class GroupChatServiceImpl implements GroupChatService {
 
     @Override
     @Transactional
+    @KafkaListener(topics = "post-banzzakCreated", errorHandler = "kafkaErrorHandler")
     public void handleBanzzakCreated(String body) throws JsonProcessingException {
-        log.info("Event Caught: post-banzzakCreated");
+        log.info("Event Caught: post-banzzakCreated " + body);
         BanzzakCreatedEventDto banzzakCreatedEventDto = new ObjectMapper().readValue(body, BanzzakCreatedEventDto.class);
-        Post post = postRepository.findById(banzzakCreatedEventDto.getPostId()).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findById(banzzakCreatedEventDto.getId()).orElseThrow(PostNotFoundException::new);
         if(! (post instanceof Banzzak)) throw new PostNotBanzzakException();
         if(post.getChatRooms().size() > 0) throw new ChatRoomForTheBanzzakAlreadyExistsException();
 
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.createChatRoom());
-        chatRoom.linkPost(post);
-        ChatRoomMember.create(post.getOwner(), chatRoom);
+        chatRoom.relatePost(post);
+        ChatRoomMember.create(post.getOwner(), chatRoom, banzzakCreatedEventDto.getName());
 
         kafkaTemplate.send("chat-chatRoomCreated", new ObjectMapper().writeValueAsString(ChatRoomCreatedEventDto.create(chatRoom)));
         log.info("Event Occurred: chat-chatRoomCreated");
