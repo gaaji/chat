@@ -25,8 +25,4 @@ public class Banzzak extends Post {
     public void addChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
     }
-
-    public void linkChatRoom(ChatRoom chatRoom) {
-        this.chatRoom = chatRoom;
-    }
 }
