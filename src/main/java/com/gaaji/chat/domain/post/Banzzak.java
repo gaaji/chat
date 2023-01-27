@@ -17,7 +17,12 @@ public class Banzzak extends Post {
     @Override
     public List<ChatRoom> getChatRooms() {
         ArrayList<ChatRoom> chatRooms = new ArrayList<>();
-        chatRooms.add(chatRoom);
+        if(chatRoom != null) chatRooms.add(chatRoom);
         return chatRooms;
+    }
+
+    @Override
+    public void addChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
     }
 }

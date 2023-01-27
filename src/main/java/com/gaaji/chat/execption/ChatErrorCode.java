@@ -8,18 +8,18 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ChatErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "C-0001", "USER_NOT_FOUND"),
-
     GROUP_CHAT_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "C-0002", "GROUP_CHAT_MEMBER_NOT_FOUND"),
-
     NOT_YOUR_CHAT_ROOM(HttpStatus.FORBIDDEN, "C-0003", "NOT_YOUR_CHAT_ROOM"),
-
     NOT_YOUR_GROUP_CHAT_MEMBER(HttpStatus.FORBIDDEN, "C-0004", "NOT_YOUR_GROUP_CHAT_MEMBER"),
-
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "C-0005", "CHAT_ROOM_NOT_FOUND"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "c-0006", "NOT_FOUND"),
     POST_NOT_JOONGGO(HttpStatus.BAD_REQUEST, "c-0007", "the post of id is not a joonggo"),
     NOT_YOUR_RESOURCE(HttpStatus.FORBIDDEN, "c-0008", "not your resource"),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "c-0009", "internal server error"), JOONGGO_CHAT_ROOM_FOR_THE_BUYER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0010", "");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "c-0009", "internal server error"),
+    JOONGGO_CHAT_ROOM_FOR_THE_BUYER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0010", ""),
+    POST_NOT_BANZZAK(HttpStatus.BAD_REQUEST, "c-0011", ""),
+
+    CHATROOM_FOR_THE_BANZZAK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0012", "");
 
 
     private final HttpStatus httpStatus;

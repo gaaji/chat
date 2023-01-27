@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class ChatCreatedEventDto {
+public class ChatRoomCreatedEventDto {
     private String roomId;
     private List<String> memberIds = new ArrayList<>();
 
-    public static ChatCreatedEventDto create(ChatRoom duoChatRoom) {
-        ChatCreatedEventDto dto = new ChatCreatedEventDto();
-        dto.roomId = duoChatRoom.getId();
-        for (User member : duoChatRoom.getMembers()) {
+    public static ChatRoomCreatedEventDto create(ChatRoom chatRoom) {
+        ChatRoomCreatedEventDto dto = new ChatRoomCreatedEventDto();
+        dto.roomId = chatRoom.getId();
+        for (User member : chatRoom.getMembers()) {
             dto.memberIds.add(member.getId());
         }
         return dto;

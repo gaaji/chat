@@ -1,6 +1,8 @@
-package com.gaaji.chat.execption;
+package com.gaaji.chat.execption.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gaaji.chat.execption.AbstractApiException;
+import com.gaaji.chat.execption.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

@@ -10,23 +10,15 @@ import java.util.List;
 @Getter
 public class ChatRoomResponseDto {
     private String id;
-    private String name;
+    private String roomNameForYou;
     private LocalDateTime createdAt;
     private List<UserDto> members = new ArrayList<>();
 
-    public static List<ChatRoomResponseDto> listOf(List<ChatRoom> chatRooms) {
-        List<ChatRoomResponseDto> list = new ArrayList<>();
-        for (ChatRoom chatRoom : chatRooms) {
-            list.add(of(chatRoom));
-        }
-        return list;
-    }
-
-    public static ChatRoomResponseDto of(ChatRoom chatRoom) {
+    public static ChatRoomResponseDto of(ChatRoom chatRoom, String chatRoomNameForTheUser) {
         ChatRoomResponseDto dto = new ChatRoomResponseDto();
         dto.id = chatRoom.getId();
         dto.createdAt = chatRoom.getCreatedAt();
-        dto.name = chatRoom.getName();
+        dto.roomNameForYou = chatRoomNameForTheUser;
         dto.members = UserDto.listOf(chatRoom.getChatRoomMembers());
         return dto;
     }
@@ -35,7 +27,7 @@ public class ChatRoomResponseDto {
     public String toString() {
         return "RoomResponseDto{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", name='" + roomNameForYou + '\'' +
                 ", createdAt=" + createdAt +
                 ", users=" + members +
                 '}';

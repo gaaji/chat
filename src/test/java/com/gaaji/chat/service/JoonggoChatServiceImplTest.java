@@ -33,10 +33,6 @@ class JoonggoChatServiceImplTest {
     @Autowired
     EntityManager em;
 
-    private ChatRoom newRoom() {
-        return chatRoomRepository.save(ChatRoom.createGroupChatRoom(UUID.randomUUID().toString()));
-    }
-
     User newUser() {
         return userRepository.save(new User(UUID.randomUUID().toString()));
     }
