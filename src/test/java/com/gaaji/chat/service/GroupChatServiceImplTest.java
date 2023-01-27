@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
+import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import com.gaaji.chat.domain.post.Banzzak;
 import com.gaaji.chat.domain.post.Post;
 import com.gaaji.chat.execption.ChatRoomForTheBanzzakAlreadyExistsException;
@@ -13,6 +14,7 @@ import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.service.dto.BanzzakCreatedEventDto;
 import com.gaaji.chat.service.dto.BanzzakUserJoinedEventDto;
+import com.gaaji.chat.service.dto.BanzzakUserLeftEventDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +88,28 @@ class GroupChatServiceImplTest {
         ChatRoom chatRoom = banzzak.getChatRoom();
         Assertions.assertTrue(chatRoom.getChatRoomMembers().size() == 2);
         chatRoom.getChatRoomMembers().forEach(chatRoomMember -> Assertions.assertTrue(chatRoomMember.getRoomName().equals(banzzak.getName())));
+    }
+
+    @Test
+    void handleBanzzakUserLeft() throws JsonProcessingException {
+        // given
+        User banzzakOwner = newUser();
+        User userToJoin = newUser();
+        Banzzak newBanzzak = newBanzzak(banzzakOwner);
+        ObjectMapper objectMapper = new ObjectMapper();
+        groupChatService.handleBanzzakCreated(new ObjectMapper().writeValueAsString(BanzzakCreatedEventDto.create(newBanzzak)));
+        groupChatService.handleBanzzakUserJoined(objectMapper.writeValueAsString(BanzzakUserJoinedEventDto.create(newBanzzak.getId(), userToJoin.getId())));
+
+        // when
+        groupChatService.handleBanzzakUserLeft(objectMapper.writeValueAsString(BanzzakUserLeftEventDto.create(newBanzzak.getId(), userToJoin.getId())));
+
+        // then
+        Banzzak banzzak = banzzakRepository.findById(newBanzzak.getId()).get();
+        for (ChatRoomMember chatRoomMember : banzzak.getChatRoom().getChatRoomMembers()) {
+            if (chatRoomMember.getMember().equals(userToJoin)) {
+                Assertions.assertTrue(chatRoomMember.isLeft());
+                break;
+            }
+        }
     }
 }

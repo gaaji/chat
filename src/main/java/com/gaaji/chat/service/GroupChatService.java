@@ -6,4 +6,6 @@ public interface GroupChatService {
     void handleBanzzakCreated(String body) throws JsonProcessingException;
 
     void handleBanzzakUserJoined(String body) throws JsonProcessingException;
+
+    void handleBanzzakUserLeft(String body) throws JsonProcessingException;
 }
