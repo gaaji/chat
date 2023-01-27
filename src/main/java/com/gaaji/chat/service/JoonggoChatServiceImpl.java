@@ -15,6 +15,7 @@ import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
 import com.gaaji.chat.service.dto.ChatRoomDeletedEventDto;
+import com.gaaji.chat.service.dto.MemberLeftEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -63,11 +64,19 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         User memberToLeave = userRepository.findById(memberIdToLeave).orElseThrow(UserNotFoundException::new);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(ChatRoomNotFoundException::new);
         chatRoom.leaveMember(memberToLeave);
+        try {
+            String body = new ObjectMapper().writeValueAsString(MemberLeftEventDto.create(memberToLeave));
+            kafkaTemplate.send("chat-memberLeft", body);
+            log.info("Event Occurred: chat-memberLeft " + body);
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException();
+        }
+
         if (chatRoom.getChatRoomMembers().stream().filter(chatRoomMember -> !chatRoomMember.isLeft()).count() > 0) return;
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
             kafkaTemplate.send("chat-chatRoomDeleted", body);
-            log.info("Event Occurred: chat-chatRoomDeleted");
+            log.info("Event Occurred: chat-chatRoomDeleted " + body);
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
