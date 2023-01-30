@@ -31,9 +31,10 @@ public class GroupChatServiceImpl implements GroupChatService {
     private final PostRepository postRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+
     @Override
     @Transactional
-    @KafkaListener(topics = "post-banzzakCreated", errorHandler = "kafkaErrorHandler")
+    @KafkaListener(topics = "post-banzzakCreated", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakCreated")
     public void handleBanzzakCreated(String body) throws JsonProcessingException {
         log.info("Event Caught: post-banzzakCreated " + body);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -53,7 +54,7 @@ public class GroupChatServiceImpl implements GroupChatService {
 
     @Override
     @Transactional
-    @KafkaListener(topics = "post-banzzakUserJoined", errorHandler = "kafkaErrorHandler")
+    @KafkaListener(topics = "post-banzzakUserJoined", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakUserJoined")
     public void handleBanzzakUserJoined(String body) throws JsonProcessingException {
         log.info("Event Caught: post-banzzakUserJoined " + body);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -75,7 +76,7 @@ public class GroupChatServiceImpl implements GroupChatService {
     }
 
     @Override
-    @KafkaListener(topics = "post-banzzakUserLeft", errorHandler = "kafkaErrorHandler")
+    @KafkaListener(topics = "post-banzzakUserLeft", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakUserLeft")
     @Transactional
     public void handleBanzzakUserLeft(String body) throws JsonProcessingException {
         log.info("Event Caught: post-banzzakUserLeft " + body);
