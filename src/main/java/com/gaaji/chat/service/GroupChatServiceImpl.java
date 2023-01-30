@@ -12,10 +12,7 @@ import com.gaaji.chat.repository.BanzzakRepository;
 import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
-import com.gaaji.chat.service.dto.BanzzakCreatedEventDto;
-import com.gaaji.chat.service.dto.BanzzakUserJoinedEventDto;
-import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
-import com.gaaji.chat.service.dto.MemberAddedEventDto;
+import com.gaaji.chat.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -75,5 +72,26 @@ public class GroupChatServiceImpl implements GroupChatService {
         String data = objectMapper.writeValueAsString(MemberAddedEventDto.create(chatRoom.getId(), user.getId()));
         kafkaTemplate.send("chat-memberAdded", data);
         log.info("Event Occurred: chat-memberAdded " + data);
+    }
+
+    @Override
+    @KafkaListener(topics = "post-banzzakUserLeft", errorHandler = "kafkaErrorHandler")
+    @Transactional
+    public void handleBanzzakUserLeft(String body) throws JsonProcessingException {
+        log.info("Event Caught: post-banzzakUserLeft " + body);
+        ObjectMapper objectMapper = new ObjectMapper();
+        BanzzakUserLeftEventDto banzzakUserLeftEventDto = objectMapper.readValue(body, BanzzakUserLeftEventDto.class);
+        Banzzak banzzak = banzzakRepository.findById(banzzakUserLeftEventDto.getPostId()).orElseThrow(PostNotFoundException::new);
+        User user = userRepository.findById(banzzakUserLeftEventDto.getUserId()).orElseThrow(UserNotFoundException::new);
+
+        for (ChatRoomMember chatRoomMember : banzzak.getChatRoom().getChatRoomMembers()) {
+            if (chatRoomMember.getMember().equals(user)) {
+                chatRoomMember.leave();
+                String data = objectMapper.writeValueAsString(MemberAddedEventDto.create(chatRoomMember.getChatRoom().getId(), user.getId()));
+                kafkaTemplate.send("chat-memberLeft", data);
+                log.info("Event Occurred: chat-memberLeft " + data);
+                break;
+            }
+        }
     }
 }
