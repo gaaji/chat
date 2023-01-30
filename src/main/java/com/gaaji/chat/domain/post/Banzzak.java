@@ -14,6 +14,8 @@ public class Banzzak extends Post {
     @OneToOne(mappedBy = "post", fetch = FetchType.LAZY)
     private ChatRoom chatRoom;
 
+    private String name;
+
     @Override
     public List<ChatRoom> getChatRooms() {
         ArrayList<ChatRoom> chatRooms = new ArrayList<>();
@@ -24,5 +26,9 @@ public class Banzzak extends Post {
     @Override
     public void addChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
+    }
+
+    public void setNameForTest(String name) {
+        this.name = name;
     }
 }

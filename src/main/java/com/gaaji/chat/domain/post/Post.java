@@ -26,11 +26,13 @@ public abstract class Post {
         return (Joonggo) joonggo;
     }
 
-    public static Banzzak randomBanzzakForTest(User owner) {
-        Post banzzak = new Banzzak();
-        banzzak.id = UUID.randomUUID().toString();
-        banzzak.owner = owner;
-        return (Banzzak) banzzak;
+    public static Banzzak randomBanzzakForTest(User owner, String name) {
+        Post post = new Banzzak();
+        post.id = UUID.randomUUID().toString();
+        post.owner = owner;
+        Banzzak banzzak = (Banzzak) post;
+        banzzak.setNameForTest(name);
+        return banzzak;
     }
 
     public abstract List<ChatRoom> getChatRooms();

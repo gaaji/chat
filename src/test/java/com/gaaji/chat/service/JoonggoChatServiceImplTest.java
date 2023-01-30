@@ -1,7 +1,7 @@
 package com.gaaji.chat.service;
 
-import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
 import com.gaaji.chat.controller.dto.ChatRoomResponseDto;
+import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.chatroom.ChatRoomMember;
