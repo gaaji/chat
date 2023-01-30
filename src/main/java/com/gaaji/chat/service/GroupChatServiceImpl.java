@@ -15,6 +15,7 @@ import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -94,5 +95,23 @@ public class GroupChatServiceImpl implements GroupChatService {
                 break;
             }
         }
+    }
+
+    @Override
+    @KafkaListener(topics = "post-banzzakDeleted", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakDeleted")
+    @Transactional
+    public void handleBanzzakDeleted(String body) throws JsonProcessingException {
+        log.info("Event Caught: post-banzzakDeleted " + body);
+        ObjectMapper objectMapper = new ObjectMapper();
+        BanzzakDeletedEventDto banzzakDeletedEventDto = objectMapper.readValue(body, BanzzakDeletedEventDto.class);
+        Banzzak banzzak = banzzakRepository.findById(banzzakDeletedEventDto.getId()).orElseThrow(PostNotFoundException::new);
+        ChatRoom chatRoom = banzzak.getChatRoom();
+        if(chatRoom == null) throw new InternalServerException();
+        postRepository.delete(banzzak);
+        chatRoomRepository.delete(chatRoom);
+
+        String data = objectMapper.writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
+        kafkaTemplate.send("chat-chatRoomDeleted", data);
+        log.info("Event Occurred: chat-chatRoomDeleted " + data);
     }
 }

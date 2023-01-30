@@ -13,6 +13,7 @@ import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
 import com.gaaji.chat.repository.UserRepository;
 import com.gaaji.chat.service.dto.BanzzakCreatedEventDto;
+import com.gaaji.chat.service.dto.BanzzakDeletedEventDto;
 import com.gaaji.chat.service.dto.BanzzakUserJoinedEventDto;
 import com.gaaji.chat.service.dto.BanzzakUserLeftEventDto;
 import org.junit.jupiter.api.Assertions;
@@ -111,5 +112,20 @@ class GroupChatServiceImplTest {
                 break;
             }
         }
+    }
+
+    @Test
+    void handleBanzzakDeleted() throws JsonProcessingException {
+        User user = newUser();
+        Banzzak newBanzzak = newBanzzak(user);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        groupChatService.handleBanzzakCreated(objectMapper.writeValueAsString(BanzzakCreatedEventDto.create(newBanzzak)));
+        Banzzak banzzak = banzzakRepository.findById(newBanzzak.getId()).get();
+        ChatRoom chatRoom = banzzak.getChatRoom();
+        groupChatService.handleBanzzakDeleted(objectMapper.writeValueAsString(BanzzakDeletedEventDto.create(newBanzzak.getId())));
+
+        Assertions.assertFalse(chatRoomRepository.findById(chatRoom.getId()).isPresent());
+        Assertions.assertFalse(banzzakRepository.findById(newBanzzak.getId()).isPresent());
     }
 }
