@@ -1,0 +1,31 @@
+spring:
+  config:
+    activate:
+      on-profile: prod-kafka
+  kafka:
+    bootstrap-servers: [카프카 서버 주소]
+    consumer:
+      group-id: chat-api
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      client-id: chat-api
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+---
+spring:
+  config:
+    activate:
+      on-profile: dev-kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: chat-api
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      client-id: chat-api
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer

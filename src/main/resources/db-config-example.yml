@@ -1,0 +1,49 @@
+spring:
+  config:
+    activate:
+      on-profile: prod-db
+  datasource:
+    url: [URL] # 설정 필요
+    driverClassName: [Driver] # 설정 필요
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+  sql:
+    init:
+      encoding: utf-8
+---
+spring:
+  config:
+    activate:
+      on-profile: dev-db
+  datasource:
+    url: jdbc:h2:mem:test;
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      encoding: utf-8
