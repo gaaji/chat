@@ -8,4 +8,6 @@ public interface GroupChatService {
     void handleBanzzakUserJoined(String body) throws JsonProcessingException;
 
     void handleBanzzakUserLeft(String body) throws JsonProcessingException;
+
+    void handleBanzzakDeleted(String body) throws JsonProcessingException;
 }
