@@ -3,6 +3,8 @@ package com.gaaji.chat.domain.chatroom;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.post.Post;
 import lombok.Getter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Entity
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@SQLDelete(sql = "update chat_room set deleted_at = current_timestamp where id = ?")
+@Where(clause = "deleted_at is null")
 public class ChatRoom {
     @Id
     private String id;
@@ -28,6 +32,8 @@ public class ChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
+
+    private LocalDateTime deletedAt;
 
     public static ChatRoom createChatRoom() {
         ChatRoom chatRoom = new ChatRoom();
