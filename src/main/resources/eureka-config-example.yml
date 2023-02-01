@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: prod-eureka
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: [URL] # 설정 필요
+---
+spring:
+  config:
+    activate:
+      on-profile: dev-eureka
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka

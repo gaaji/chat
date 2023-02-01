@@ -18,7 +18,6 @@ import java.util.UUID;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "update chat_room set deleted_at = current_timestamp where id = ?")
-@Where(clause = "deleted_at is null")
 public class ChatRoom {
     @Id
     private String id;
