@@ -121,11 +121,12 @@ class GroupChatServiceImplTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         groupChatService.handleBanzzakCreated(objectMapper.writeValueAsString(BanzzakCreatedEventDto.create(newBanzzak)));
-        Banzzak banzzak = banzzakRepository.findById(newBanzzak.getId()).get();
-        ChatRoom chatRoom = banzzak.getChatRoom();
+        ChatRoom chatRoom = em.find(ChatRoom.class, newBanzzak.getChatRoom().getId());
+        Assertions.assertNotNull(chatRoom);
         groupChatService.handleBanzzakDeleted(objectMapper.writeValueAsString(BanzzakDeletedEventDto.create(newBanzzak.getId())));
-
-        Assertions.assertFalse(chatRoomRepository.findById(chatRoom.getId()).isPresent());
-        Assertions.assertFalse(banzzakRepository.findById(newBanzzak.getId()).isPresent());
+        chatRoom = em.find(ChatRoom.class, newBanzzak.getChatRoom().getId());
+        Assertions.assertNull(chatRoom);
+        Banzzak banzzak = em.find(Banzzak.class, newBanzzak.getId());
+        Assertions.assertNull(banzzak);
     }
 }
