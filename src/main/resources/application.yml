@@ -11,6 +11,10 @@ spring:
         - "prod-kafka"
         - "prod-db"
         - "prod-eureka"
+      "docker":
+        - "docker-eureka"
+        - "dev-db"
+        - "prod-kafka"
 
 ---
 spring:
