@@ -10,10 +10,12 @@ import java.nio.charset.StandardCharsets;
 
 @Getter
 public class AuthFeignErrorResponse {
+    private String timeStamp;
     private HttpStatus httpStatus;
     private String errorCode;
     private String errorName;
     private String errorMessage;
+    private String path;
 
     public static AuthFeignErrorResponse of (FeignException e) throws JsonProcessingException {
         String body = StandardCharsets.UTF_8.decode(e.responseBody().orElseThrow(() -> e)).toString();

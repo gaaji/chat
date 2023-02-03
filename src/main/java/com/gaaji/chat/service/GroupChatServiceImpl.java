@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupChatServiceImpl implements GroupChatService {
     private final BanzzakRepository banzzakRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final PostRepository postRepository;
+    private final PostRepository postRepository; // TODO replace with BanzzakRepositoryUsingFeign (TODO impl)
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final UserRepositoryUsingFeign userRepositoryUsingFeign;
 

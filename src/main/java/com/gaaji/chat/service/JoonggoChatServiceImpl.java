@@ -10,9 +10,7 @@ import com.gaaji.chat.domain.chatroom.ChatRoomMember;
 import com.gaaji.chat.domain.post.Joonggo;
 import com.gaaji.chat.domain.post.Post;
 import com.gaaji.chat.execption.*;
-import com.gaaji.chat.repository.ChatRoomRepository;
-import com.gaaji.chat.repository.PostRepository;
-import com.gaaji.chat.repository.UserRepositoryUsingFeign;
+import com.gaaji.chat.repository.*;
 import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
 import com.gaaji.chat.service.dto.ChatRoomDeletedEventDto;
 import com.gaaji.chat.service.dto.MemberLeftEventDto;
@@ -27,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class JoonggoChatServiceImpl implements JoonggoChatService {
-    private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepositoryUsingFeign userRepositoryUsingFeign;
+    private final JoonggoRepositoryUsingFeign joonggoRepositoryUsingFeign;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
@@ -37,14 +35,13 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
     public ChatRoomResponseDto createDuoChatRoom(String authId, JoonggoChatRoomSaveRequestDto dto) {
         if(!authId.equals(dto.getBuyerId())) throw new NotYourResourceException();
         User buyer = userRepositoryUsingFeign.findById(dto.getBuyerId()).orElseThrow(UserNotFoundException::new);
-        Post post = postRepository.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
-        if(!(post instanceof Joonggo)) throw new PostNotJoonggoException();
-        if(((Joonggo) post).getChatRoomOf(buyer) != null) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
+        Joonggo joonggo = joonggoRepositoryUsingFeign.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
+        if(joonggo.getChatRoomOf(buyer) != null) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
 
         ChatRoom duoChatRoom = chatRoomRepository.save(ChatRoom.createChatRoom());
-        duoChatRoom.relatePost(post);
-        ChatRoomMember.create(post.getOwner(), duoChatRoom, buyer.getName());
-        ChatRoomMember.create(buyer, duoChatRoom, post.getOwner().getName());
+        duoChatRoom.relatePost(joonggo);
+        ChatRoomMember.create(joonggo.getOwner(), duoChatRoom, buyer.getName());
+        ChatRoomMember.create(buyer, duoChatRoom, joonggo.getOwner().getName());
 
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomCreatedEventDto.create(duoChatRoom));
@@ -53,7 +50,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
-        return ChatRoomResponseDto.of(duoChatRoom, post.getOwner().getName());
+        return ChatRoomResponseDto.of(duoChatRoom, joonggo.getOwner().getName());
     }
 
     @Override

@@ -9,14 +9,12 @@ import com.gaaji.chat.execption.InternalServerException;
 import com.gaaji.chat.utils.TransactionExecutor;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
 public class UserRepositoryUsingFeignImpl implements UserRepositoryUsingFeign {
     private final AuthFeignClient authFeignClient;
     private final UserRepository userRepository;
@@ -24,10 +22,10 @@ public class UserRepositoryUsingFeignImpl implements UserRepositoryUsingFeign {
 
     @Override
     public Optional<User> findById(String id) {
-        return userRepository.findById(id).or(() -> Optional.of(transactionExecutor.execute(() -> findAuthByIdUsingFeign(id))));
+        return userRepository.findById(id).or(() -> Optional.of(transactionExecutor.execute(() -> findUserByIdUsingFeign(id))));
     }
 
-    private User findAuthByIdUsingFeign(String id) {
+    private User findUserByIdUsingFeign(String id) {
         try {
             AuthFeignClientDto authById = authFeignClient.findAuthById(id);
             return userRepository.save(User.create(authById.getAuthId(), authById.getNickname()));
