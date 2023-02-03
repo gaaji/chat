@@ -12,6 +12,7 @@ import com.gaaji.chat.domain.post.Post;
 import com.gaaji.chat.execption.*;
 import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
+import com.gaaji.chat.repository.UserRepositoryUsingFeign;
 import com.gaaji.chat.service.dto.ChatRoomCreatedEventDto;
 import com.gaaji.chat.service.dto.ChatRoomDeletedEventDto;
 import com.gaaji.chat.service.dto.MemberLeftEventDto;
@@ -28,14 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class JoonggoChatServiceImpl implements JoonggoChatService {
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final UserSearchUsingFeignService userSearchUsingFeignService;
+    private final UserRepositoryUsingFeign userRepositoryUsingFeign;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     @Transactional
     public ChatRoomResponseDto createDuoChatRoom(String authId, JoonggoChatRoomSaveRequestDto dto) {
         if(!authId.equals(dto.getBuyerId())) throw new NotYourResourceException();
-        User buyer = userSearchUsingFeignService.searchById(dto.getBuyerId());
+        User buyer = userRepositoryUsingFeign.findById(dto.getBuyerId()).orElseThrow(UserNotFoundException::new);
         Post post = postRepository.findById(dto.getJoonggoId()).orElseThrow(PostNotFoundException::new);
         if(!(post instanceof Joonggo)) throw new PostNotJoonggoException();
         if(((Joonggo) post).getChatRoomOf(buyer) != null) throw new JoonggoChatRoomForTheBuyerAlreadyExistsException();
@@ -59,7 +60,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
     @Transactional
     public void leaveDuoChatRoom(String authId, String chatRoomId, String memberIdToLeave) {
         if(!authId.equals(memberIdToLeave)) throw new NotYourResourceException();
-        User memberToLeave = userSearchUsingFeignService.searchById(memberIdToLeave);
+        User memberToLeave = userRepositoryUsingFeign.findById(memberIdToLeave).orElseThrow(UserNotFoundException::new);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(ChatRoomNotFoundException::new);
         chatRoom.leaveMember(memberToLeave);
         try {

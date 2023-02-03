@@ -11,6 +11,7 @@ import com.gaaji.chat.execption.*;
 import com.gaaji.chat.repository.BanzzakRepository;
 import com.gaaji.chat.repository.ChatRoomRepository;
 import com.gaaji.chat.repository.PostRepository;
+import com.gaaji.chat.repository.UserRepositoryUsingFeign;
 import com.gaaji.chat.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class GroupChatServiceImpl implements GroupChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final PostRepository postRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final UserSearchUsingFeignService userSearchUsingFeignService;
+    private final UserRepositoryUsingFeign userRepositoryUsingFeign;
 
 
     @Override
@@ -58,7 +59,7 @@ public class GroupChatServiceImpl implements GroupChatService {
         log.info("Event Caught: post-banzzakUserJoined " + body);
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakUserJoinedEventDto banzzakUserJoinedEventDto = objectMapper.readValue(body, BanzzakUserJoinedEventDto.class);
-        User user = userSearchUsingFeignService.searchById(banzzakUserJoinedEventDto.getUserId());
+        User user = userRepositoryUsingFeign.findById(banzzakUserJoinedEventDto.getUserId()).orElseThrow(UserNotFoundException::new);
         Post post = postRepository.findById(banzzakUserJoinedEventDto.getPostId()).orElseThrow(PostNotBanzzakException::new);
         if(!(post instanceof Banzzak)) throw new PostNotBanzzakException();
 
@@ -82,7 +83,7 @@ public class GroupChatServiceImpl implements GroupChatService {
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakUserLeftEventDto banzzakUserLeftEventDto = objectMapper.readValue(body, BanzzakUserLeftEventDto.class);
         Banzzak banzzak = banzzakRepository.findById(banzzakUserLeftEventDto.getPostId()).orElseThrow(PostNotFoundException::new);
-        User user = userSearchUsingFeignService.searchById(banzzakUserLeftEventDto.getUserId());
+        User user = userRepositoryUsingFeign.findById(banzzakUserLeftEventDto.getUserId()).orElseThrow(UserNotFoundException::new);
 
         for (ChatRoomMember chatRoomMember : banzzak.getChatRoom().getChatRoomMembers()) {
             if (chatRoomMember.getMember().equals(user)) {
