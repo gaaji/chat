@@ -2,7 +2,7 @@ package com.gaaji.chat.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gaaji.chat.adapter.feign.UsedItemFeignClient;
-import com.gaaji.chat.adapter.feign.dto.AuthFeignErrorResponse;
+import com.gaaji.chat.adapter.feign.dto.FeignErrorResponse;
 import com.gaaji.chat.adapter.feign.dto.UsedItemPostFeignClientDto;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.post.Joonggo;
@@ -35,7 +35,7 @@ public class JoonggoRepositoryUsingFeignImpl implements JoonggoRepositoryUsingFe
             return postRepository.save(Joonggo.createJoonggo(usedItemById.getPostId(), user));
         } catch (FeignException e) {
             try {
-                AuthFeignErrorResponse errorResponse = AuthFeignErrorResponse.of(e);
+                FeignErrorResponse errorResponse = FeignErrorResponse.of(e);
                 if(!errorResponse.getErrorName().equals("NO_SEARCH_POST_EXCEPTION")) throw new InternalServerException();
                 return null;
             } catch (JsonProcessingException ex) {
