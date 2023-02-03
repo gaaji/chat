@@ -18,8 +18,8 @@ public enum ChatErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "c-0009", "internal server error"),
     JOONGGO_CHAT_ROOM_FOR_THE_BUYER_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0010", ""),
     POST_NOT_BANZZAK(HttpStatus.BAD_REQUEST, "c-0011", ""),
-
-    CHATROOM_FOR_THE_BANZZAK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0012", "");
+    CHATROOM_FOR_THE_BANZZAK_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "c-0012", ""),
+    SERVICE_UNMATCHED(HttpStatus.INTERNAL_SERVER_ERROR, "c-0013", ""),;
 
 
     private final HttpStatus httpStatus;

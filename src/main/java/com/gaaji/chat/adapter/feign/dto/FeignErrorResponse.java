@@ -9,14 +9,16 @@ import org.springframework.http.HttpStatus;
 import java.nio.charset.StandardCharsets;
 
 @Getter
-public class AuthFeignErrorResponse {
+public class FeignErrorResponse {
+    private String timeStamp;
     private HttpStatus httpStatus;
     private String errorCode;
     private String errorName;
     private String errorMessage;
+    private String path;
 
-    public static AuthFeignErrorResponse of (FeignException e) throws JsonProcessingException {
+    public static FeignErrorResponse of (FeignException e) throws JsonProcessingException {
         String body = StandardCharsets.UTF_8.decode(e.responseBody().orElseThrow(() -> e)).toString();
-        return new ObjectMapper().readValue(body, AuthFeignErrorResponse.class);
+        return new ObjectMapper().readValue(body, FeignErrorResponse.class);
     }
 }

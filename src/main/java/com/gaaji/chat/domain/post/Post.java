@@ -38,4 +38,12 @@ public abstract class Post {
     public abstract List<ChatRoom> getChatRooms();
 
     public abstract void addChatRoom(ChatRoom chatRoom);
+
+    protected void setId(String id) {
+        this.id = id;
+    }
+
+    protected void setOwner(User owner) {
+        this.owner = owner;
+    }
 }
