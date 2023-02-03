@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient("auth-service")
 public interface AuthFeignClient {
     @GetMapping("/auth/{authId}")
-    AuthFeignClientDto findAuthById(@PathVariable("authId") String authId);
+    AuthFeignClientDto findAuthById(@PathVariable String authId);
 }

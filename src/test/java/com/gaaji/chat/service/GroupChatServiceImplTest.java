@@ -33,6 +33,7 @@ import java.util.UUID;
         }
 )
 class GroupChatServiceImplTest {
+    
     @Autowired
     UserRepository userRepository;
     @Autowired
