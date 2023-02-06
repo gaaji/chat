@@ -2,6 +2,7 @@ package com.gaaji.chat.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaaji.chat.config.EventProps;
 import com.gaaji.chat.controller.dto.JoonggoChatRoomSaveRequestDto;
 import com.gaaji.chat.controller.dto.ChatRoomResponseDto;
 import com.gaaji.chat.domain.User;
@@ -29,6 +30,7 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
     private final UserRepositoryUsingFeign userRepositoryUsingFeign;
     private final JoonggoRepositoryUsingFeign joonggoRepositoryUsingFeign;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final EventProps eventProps;
 
     @Override
     @Transactional
@@ -45,8 +47,9 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
 
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomCreatedEventDto.create(duoChatRoom));
-            kafkaTemplate.send("chat-chatRoomCreated", body);
-            log.info("Event Occurred: chat-chatRoomCreated");
+            String eventName = eventProps.getChat().getChatRoom().getCreated();
+            kafkaTemplate.send(eventName, body);
+            log.info("Event Occurred: " + eventName);
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
@@ -62,8 +65,9 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         chatRoom.leaveMember(memberToLeave);
         try {
             String body = new ObjectMapper().writeValueAsString(MemberLeftEventDto.create(memberToLeave));
-            kafkaTemplate.send("chat-memberLeft", body);
-            log.info("Event Occurred: chat-memberLeft " + body);
+            String eventName = eventProps.getChat().getMember().getLeft();
+            kafkaTemplate.send(eventName, body);
+            log.info("Event Occurred: {} {}", eventName, body);
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }
@@ -71,8 +75,9 @@ public class JoonggoChatServiceImpl implements JoonggoChatService {
         if (chatRoom.getChatRoomMembers().stream().filter(chatRoomMember -> !chatRoomMember.isLeft()).count() > 0) return;
         try {
             String body = new ObjectMapper().writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
-            kafkaTemplate.send("chat-chatRoomDeleted", body);
-            log.info("Event Occurred: chat-chatRoomDeleted " + body);
+            String eventName = eventProps.getChat().getChatRoom().getDeleted();
+            kafkaTemplate.send(eventName, body);
+            log.info("Event Occurred: {} {}", eventName, body);
         } catch (JsonProcessingException e) {
             throw new InternalServerException();
         }

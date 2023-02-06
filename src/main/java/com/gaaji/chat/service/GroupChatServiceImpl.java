@@ -2,6 +2,7 @@ package com.gaaji.chat.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaaji.chat.config.EventProps;
 import com.gaaji.chat.domain.User;
 import com.gaaji.chat.domain.chatroom.ChatRoom;
 import com.gaaji.chat.domain.chatroom.ChatRoomMember;
@@ -15,6 +16,7 @@ import com.gaaji.chat.repository.UserRepositoryUsingFeign;
 import com.gaaji.chat.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -30,13 +32,14 @@ public class GroupChatServiceImpl implements GroupChatService {
     private final PostRepository postRepository; // TODO replace with BanzzakRepositoryUsingFeign (TODO impl)
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final UserRepositoryUsingFeign userRepositoryUsingFeign;
-
+    private final EventProps eventProps;
 
     @Override
     @Transactional
-    @KafkaListener(topics = "post-banzzakCreated", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakCreated")
+    @KafkaListener(topics = "${events.post.banzzak.created}", errorHandler = "kafkaErrorHandler", clientIdPrefix = "${events.post.banzzak.created}")
     public void handleBanzzakCreated(String body) throws JsonProcessingException {
-        log.info("Event Caught: post-banzzakCreated " + body);
+        String caughtEventName = eventProps.getPost().getBanzzak().getCreated();
+        log.info("Event Caught: {} {}", caughtEventName, body);
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakCreatedEventDto banzzakCreatedEventDto = objectMapper.readValue(body, BanzzakCreatedEventDto.class);
         Post post = postRepository.findById(banzzakCreatedEventDto.getId()).orElseThrow(PostNotFoundException::new);
@@ -48,15 +51,17 @@ public class GroupChatServiceImpl implements GroupChatService {
         ChatRoomMember.create(post.getOwner(), chatRoom, ((Banzzak) post).getName());
 
         String data = objectMapper.writeValueAsString(ChatRoomCreatedEventDto.create(chatRoom));
-        kafkaTemplate.send("chat-chatRoomCreated", data);
-        log.info("Event Occurred: chat-chatRoomCreated " + data);
+        String producingEventName = eventProps.getChat().getChatRoom().getCreated();
+        kafkaTemplate.send(producingEventName, data);
+        log.info("Event Occurred: {} {}", producingEventName, data);
     }
 
     @Override
     @Transactional
-    @KafkaListener(topics = "post-banzzakUserJoined", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakUserJoined")
+    @KafkaListener(topics = "${events.post.banzzak.user-joined}", errorHandler = "kafkaErrorHandler", clientIdPrefix = "${events.post.banzzak.user-joined}")
     public void handleBanzzakUserJoined(String body) throws JsonProcessingException {
-        log.info("Event Caught: post-banzzakUserJoined " + body);
+        String caughtEventName = eventProps.getPost().getBanzzak().getUserJoined();
+        log.info("Event Caught: {} {}", caughtEventName, body);
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakUserJoinedEventDto banzzakUserJoinedEventDto = objectMapper.readValue(body, BanzzakUserJoinedEventDto.class);
         User user = userRepositoryUsingFeign.findById(banzzakUserJoinedEventDto.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -71,15 +76,17 @@ public class GroupChatServiceImpl implements GroupChatService {
         ChatRoomMember.create(user, chatRoom, banzzak.getName()); // ChatRoom 에 User 추가
 
         String data = objectMapper.writeValueAsString(MemberAddedEventDto.create(chatRoom.getId(), user.getId()));
-        kafkaTemplate.send("chat-memberAdded", data);
-        log.info("Event Occurred: chat-memberAdded " + data);
+        String producingEventName = eventProps.getChat().getMember().getAdded();
+        kafkaTemplate.send(producingEventName, data);
+        log.info("Event Occurred: {} {}", producingEventName, data);
     }
 
     @Override
-    @KafkaListener(topics = "post-banzzakUserLeft", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakUserLeft")
+    @KafkaListener(topics = "${events.post.banzzak.user-left}", errorHandler = "kafkaErrorHandler", clientIdPrefix = "${events.post.banzzak.user-left}")
     @Transactional
     public void handleBanzzakUserLeft(String body) throws JsonProcessingException {
-        log.info("Event Caught: post-banzzakUserLeft " + body);
+        String caughtEventName = eventProps.getPost().getBanzzak().getUserLeft();
+        log.info("Event Caught: {} {}", caughtEventName, body);
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakUserLeftEventDto banzzakUserLeftEventDto = objectMapper.readValue(body, BanzzakUserLeftEventDto.class);
         Banzzak banzzak = banzzakRepository.findById(banzzakUserLeftEventDto.getPostId()).orElseThrow(PostNotFoundException::new);
@@ -89,18 +96,20 @@ public class GroupChatServiceImpl implements GroupChatService {
             if (chatRoomMember.getMember().equals(user)) {
                 chatRoomMember.leave();
                 String data = objectMapper.writeValueAsString(MemberAddedEventDto.create(chatRoomMember.getChatRoom().getId(), user.getId()));
-                kafkaTemplate.send("chat-memberLeft", data);
-                log.info("Event Occurred: chat-memberLeft " + data);
+                String producingEventName = eventProps.getChat().getMember().getLeft();
+                kafkaTemplate.send(producingEventName, data);
+                log.info("Event Occurred: {} {}", producingEventName, data);
                 break;
             }
         }
     }
 
     @Override
-    @KafkaListener(topics = "post-banzzakDeleted", errorHandler = "kafkaErrorHandler", clientIdPrefix = "post-banzzakDeleted")
+    @KafkaListener(topics = "${events.post.banzzak.deleted}", errorHandler = "kafkaErrorHandler", clientIdPrefix = "${events.post.banzzak.deleted}")
     @Transactional
     public void handleBanzzakDeleted(String body) throws JsonProcessingException {
-        log.info("Event Caught: post-banzzakDeleted " + body);
+        String caughtEventName = eventProps.getPost().getBanzzak().getDeleted();
+        log.info("Event Caught: {} {}", caughtEventName, body);
         ObjectMapper objectMapper = new ObjectMapper();
         BanzzakDeletedEventDto banzzakDeletedEventDto = objectMapper.readValue(body, BanzzakDeletedEventDto.class);
         Banzzak banzzak = banzzakRepository.findById(banzzakDeletedEventDto.getId()).orElseThrow(PostNotFoundException::new);
@@ -110,7 +119,8 @@ public class GroupChatServiceImpl implements GroupChatService {
         chatRoomRepository.delete(chatRoom);
 
         String data = objectMapper.writeValueAsString(ChatRoomDeletedEventDto.create(chatRoom));
-        kafkaTemplate.send("chat-chatRoomDeleted", data);
-        log.info("Event Occurred: chat-chatRoomDeleted " + data);
+        String producingEventName = eventProps.getChat().getChatRoom().getDeleted();
+        kafkaTemplate.send(producingEventName, data);
+        log.info("Event Occurred: {} {}", producingEventName, data);
     }
 }
