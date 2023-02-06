@@ -25,7 +25,7 @@ public class JoonggoRepositoryUsingFeignImpl implements JoonggoRepositoryUsingFe
 
     @Override
     public Optional<Joonggo> findById(String id) {
-        return joonggoRepository.findById(id).or(() -> Optional.of(transactionExecutor.execute(() -> findJoonggoByIdUsingFeign(id))));
+        return joonggoRepository.findById(id).or(() -> Optional.ofNullable(transactionExecutor.execute(() -> findJoonggoByIdUsingFeign(id))));
     }
 
     private Joonggo findJoonggoByIdUsingFeign(String id) {

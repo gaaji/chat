@@ -22,7 +22,7 @@ public class UserRepositoryUsingFeignImpl implements UserRepositoryUsingFeign {
 
     @Override
     public Optional<User> findById(String id) {
-        return userRepository.findById(id).or(() -> Optional.of(transactionExecutor.execute(() -> findUserByIdUsingFeign(id))));
+        return userRepository.findById(id).or(() -> Optional.ofNullable(transactionExecutor.execute(() -> findUserByIdUsingFeign(id))));
     }
 
     private User findUserByIdUsingFeign(String id) {
