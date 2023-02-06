@@ -1,0 +1,14 @@
+events:
+  post:
+    banzzak:
+      created: "post-banzzakCreated"
+      deleted: "post-banzzakDeleted"
+      user-joined: "post-banzzakUserJoined"
+      user-left: "post-banzzakUserLeft"
+  chat:
+    chat-room:
+      created: "chat-chatRoomCreated"
+      deleted: "chat-chatRoomDeleted"
+    member:
+      added: "chat-memberAdded"
+      left: "chat-memberLeft"
